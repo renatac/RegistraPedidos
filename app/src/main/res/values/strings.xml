@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">RegistraPedidos</string>
+    <string name="registry_requests">Registra Pedidos</string>
+    <string name="sales_total">Total de vendas registradas: %s</string>
+    <string name="doing_sale">Fazer uma venda</string>
+    <string name="see_sales_made">Ver vendas realizadas</string>
+    <string name="fill_sale_register">Preencha os dados da venda</string>
+    <string name="request_number">Número do pedido: %s</string>
+    <string name="client_name">Nome do cliente</string>
+    <string name="product_name">Nome do produto</string>
+    <string name="total_value"><b>Valor total</b>: %s</string>
+    <string name="adding">Adicionar</string>
+    <string name="cleaning">Limpar</string>
+    <string name="product">Produto: %s</string>
+    <string name="quantity">Quantidade: %s</string>
+    <string name="quantity_label">Quantidade</string>
+    <string name="unitary_value">Valor unitário: %s</string>
+    <string name="unitary_value_label">Valor unitário</string>
+    <string name="deleting_sale">Deletar venda</string>
+    <string name="content_description_trash_image">imagem da lixeira</string>
+    <string name="content_description_app_registration_image">imagem da lixeira</string>
+    <string name="sales_added">Vendas adicionadas</string>
+    <string name="bigger_than_zero_double_message">Por favor, digite um valor > 0.0</string>
+    <string name="smaller_than_fifty_thousand_message">Por favor, digite um valor unitário \u2265 R$ 50.000</string>
+    <string name="bigger_than_zero_int_message">Por favor, digite um valor > 0.</string>
+    <string name="smaller_than_one_hundred_message">Por favor, digite uma quantidade \u2265 100.</string>
+</resources>

@@ -7,13 +7,14 @@ import androidx.navigation.compose.composable
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.mainscreen.MainScreen
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.MakeSaleScreen
+import androidx.navigation.compose.NavHost
 
 @Composable
 fun NavHost(
     viewModel: UserDataViewModel,
     navHostController: NavHostController
 ) {
-    androidx.navigation.compose.NavHost(
+    NavHost(
         navController = navHostController,
         startDestination = ScreenRoutes.MAIN.name
     ) {
@@ -21,7 +22,13 @@ fun NavHost(
             MainScreen(Modifier, navController = navHostController)
         }
         composable(route = ScreenRoutes.MAKING_SALE.name) {
-            MakeSaleScreen(Modifier, viewModel, navController = navHostController)
+            MakeSaleScreen(
+                Modifier,
+                viewModel,
+                navigateToMainScreen = {
+                    navHostController.navigate(ScreenRoutes.MAIN.name)
+                }
+            )
         }
     }
 }

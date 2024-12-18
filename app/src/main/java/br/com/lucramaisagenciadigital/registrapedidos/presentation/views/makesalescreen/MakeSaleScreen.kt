@@ -17,12 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import br.com.lucramaisagenciadigital.registrapedidos.R
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components.Buttons
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components.SaleInput
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components.ViewSales
 import org.koin.androidx.compose.koinViewModel
@@ -30,21 +30,26 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MakeSaleScreen(
     modifier: Modifier,
-    sharedViewModel: UserDataViewModel,
-    navController: NavHostController
+    viewModel: UserDataViewModel,
+    navigateToMainScreen: () -> Unit
 ) {
 
-    val allUsersData: List<UserData>? = sharedViewModel.allUsersDataStateFlow.collectAsState().value
-    val userData: UserData? = sharedViewModel.userDataStateFlow.collectAsState().value
+    val allUsersData: List<UserData>? = viewModel.allUsersDataStateFlow.collectAsState().value
+    val userData: UserData? = viewModel.userDataStateFlow.collectAsState().value
 
     val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
     saleItemMutableStateList.addAll(userData?.saleItemList.orEmpty())
-    MakeSaleScreenContent(modifier, saleItemMutableStateList)
+    MakeSaleScreenContent(modifier, viewModel, saleItemMutableStateList, navigateToMainScreen)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MakeSaleScreenContent(modifier: Modifier, saleItemList: SnapshotStateList<SaleItem>) {
+fun MakeSaleScreenContent(
+    modifier: Modifier,
+    viewModel: UserDataViewModel,
+    saleItemList: SnapshotStateList<SaleItem>,
+    navigateToMainScreen: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,8 +67,10 @@ fun MakeSaleScreenContent(modifier: Modifier, saleItemList: SnapshotStateList<Sa
                     .padding(contentPadding)
                     .background(Color.Yellow)
             ) {
+                var clientName = String()
                 // TODO (Changing 1 to requestNumber)
-                SaleInput(modifier, "1") { saleItem: SaleItem ->
+                SaleInput(modifier, "1") { saleItem: SaleItem, name: String ->
+                    clientName = name
                     saleItemList.add(saleItem)
                 }
                 ViewSales(
@@ -71,6 +78,21 @@ fun MakeSaleScreenContent(modifier: Modifier, saleItemList: SnapshotStateList<Sa
                     saleItemsList = saleItemList,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
                         saleItemList.remove(saleItem)
+                    }
+                )
+                Buttons(
+                    modifier,
+                    onCancelButtonClicked = {
+                        navigateToMainScreen()
+                    },
+                    onSaveButtonClicked = {
+                        val userData = UserData(
+                            name = clientName,
+                            requestNumber = 1,
+                            saleItemList = saleItemList
+                        )
+                        viewModel.insertUserData(userData)
+                        navigateToMainScreen()
                     }
                 )
             }
@@ -81,7 +103,5 @@ fun MakeSaleScreenContent(modifier: Modifier, saleItemList: SnapshotStateList<Sa
 @Composable
 fun MakeSaleScreenPreview() {
     val viewModel: UserDataViewModel = koinViewModel()
-
-    val navController = rememberNavController()
-    MakeSaleScreen(modifier = Modifier, viewModel, navController)
+    MakeSaleScreen(modifier = Modifier, viewModel, navigateToMainScreen = {})
 }

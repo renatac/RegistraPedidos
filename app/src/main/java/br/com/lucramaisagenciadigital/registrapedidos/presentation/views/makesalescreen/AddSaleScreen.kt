@@ -9,15 +9,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import br.com.lucramaisagenciadigital.registrapedidos.R
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
@@ -28,7 +27,7 @@ import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesal
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MakeSaleScreen(
+fun AddSaleScreen(
     modifier: Modifier,
     viewModel: UserDataViewModel,
     navigateToMainScreen: () -> Unit
@@ -37,19 +36,24 @@ fun MakeSaleScreen(
     val allUsersData: List<UserData>? = viewModel.allUsersDataStateFlow.collectAsState().value
     val userData: UserData? = viewModel.userDataStateFlow.collectAsState().value
 
-    val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
-    saleItemMutableStateList.addAll(userData?.saleItemList.orEmpty())
-    MakeSaleScreenContent(modifier, viewModel, saleItemMutableStateList, navigateToMainScreen)
+    val allUsersDataOrderByRequestNumber by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
+        initial = listOf<UserData>()
+    )
+    println(allUsersDataOrderByRequestNumber)
+
+    // saleItemMutableStateList.addAll(userData?.saleItemList.orEmpty())
+    AddSaleScreenContent(modifier, viewModel, navigateToMainScreen)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MakeSaleScreenContent(
+fun AddSaleScreenContent(
     modifier: Modifier,
     viewModel: UserDataViewModel,
-    saleItemList: SnapshotStateList<SaleItem>,
     navigateToMainScreen: () -> Unit
 ) {
+    val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
+    var clientName = String()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,28 +62,11 @@ fun MakeSaleScreenContent(
                         text = stringResource(id = R.string.doing_sale),
                         fontSize = 20.sp
                     )
-                },
+                }
             )
         },
-        content = { contentPadding ->
-            Column(
-                modifier
-                    .padding(contentPadding)
-                    .background(Color.Yellow)
-            ) {
-                var clientName = String()
-                // TODO (Changing 1 to requestNumber)
-                SaleInput(modifier, "1") { saleItem: SaleItem, name: String ->
-                    clientName = name
-                    saleItemList.add(saleItem)
-                }
-                ViewSales(
-                    modifier,
-                    saleItemsList = saleItemList,
-                    onDeleteButtonClicked = { saleItem: SaleItem ->
-                        saleItemList.remove(saleItem)
-                    }
-                )
+        bottomBar = {
+            if (saleItemMutableStateList.isNotEmpty()) {
                 Buttons(
                     modifier,
                     onCancelButtonClicked = {
@@ -89,10 +76,30 @@ fun MakeSaleScreenContent(
                         val userData = UserData(
                             name = clientName,
                             requestNumber = 1,
-                            saleItemList = saleItemList
+                            saleItemList = saleItemMutableStateList
                         )
                         viewModel.insertUserData(userData)
                         navigateToMainScreen()
+                    }
+                )
+            }
+        },
+        content = { contentPadding ->
+            Column(
+                modifier
+                    .padding(contentPadding)
+                    .background(Color.Yellow)
+            ) {
+                // TODO (Changing 1 to requestNumber)
+                SaleInput(modifier, "1") { saleItem: SaleItem, name: String ->
+                    clientName = name
+                    saleItemMutableStateList.add(saleItem)
+                }
+                ViewSales(
+                    modifier,
+                    saleItemsList = saleItemMutableStateList,
+                    onDeleteButtonClicked = { saleItem: SaleItem ->
+                        saleItemMutableStateList.remove(saleItem)
                     }
                 )
             }
@@ -103,5 +110,5 @@ fun MakeSaleScreenContent(
 @Composable
 fun MakeSaleScreenPreview() {
     val viewModel: UserDataViewModel = koinViewModel()
-    MakeSaleScreen(modifier = Modifier, viewModel, navigateToMainScreen = {})
+    AddSaleScreen(modifier = Modifier, viewModel, navigateToMainScreen = {})
 }

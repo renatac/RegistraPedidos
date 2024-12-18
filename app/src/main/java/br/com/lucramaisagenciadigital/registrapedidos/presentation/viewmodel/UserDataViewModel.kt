@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.lucramaisagenciadigital.registrapedidos.domain.Repository
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserDataViewModel(val repository: Repository) : ViewModel() {
 
@@ -16,11 +19,13 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
     private val _userDataStateFlow = MutableStateFlow<UserData?>(null)
     val userDataStateFlow: StateFlow<UserData?> = _userDataStateFlow
 
-    val allUsersDataOrderByRequestNumber = repository.usersDataOrderByRequestNumber
+    val allUsersDataOrderByRequestNumber: Flow<List<UserData?>> = repository.usersDataOrderByRequestNumber
 
     fun insertUserData(userData: UserData) {
         viewModelScope.launch {
-            repository.insertUserData(userData)
+            withContext(Dispatchers.IO) {
+                repository.insertUserData(userData)
+            }
         }
     }
 

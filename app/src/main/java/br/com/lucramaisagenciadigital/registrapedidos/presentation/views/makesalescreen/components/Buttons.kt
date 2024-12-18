@@ -2,6 +2,7 @@ package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesa
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -20,7 +21,7 @@ fun Buttons(
     onSaveButtonClicked: () -> Unit
 ) {
     Row(
-        modifier
+        modifier.padding(bottom = 32.dp)
             .fillMaxWidth()
             .background(Color.Yellow)
     ) {
@@ -28,14 +29,14 @@ fun Buttons(
             .padding(start = 16.dp, end = 8.dp, bottom = 16.dp)
             .weight(1F),
             onClick = { onCancelButtonClicked.invoke() }) {
-            Text(text = stringResource(id = R.string.cleaning))
+            Text(text = stringResource(id = R.string.cancelling))
         }
 
         Button(modifier = modifier
             .padding(start = 8.dp, end = 16.dp, bottom = 16.dp)
             .weight(1F),
             onClick = { onSaveButtonClicked.invoke() }) {
-            Text(text = stringResource(id = R.string.adding))
+            Text(text = stringResource(id = R.string.saving))
         }
     }
 }

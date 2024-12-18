@@ -53,7 +53,7 @@ fun ViewSales(
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = modifier
-                    .padding(16.dp)
+                    .padding(4.dp)
                     .fillMaxWidth()
             )
         }
@@ -84,7 +84,7 @@ fun ViewSales(
                                 text = stringResource(id = R.string.product, saleItem.product),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = Color.White,
                                 modifier = modifier
                                     .padding()
                                     .fillMaxWidth()
@@ -107,7 +107,7 @@ fun ViewSales(
                                 ),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = Color.White,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .constrainAs(quantityLabelRef) {
@@ -130,7 +130,7 @@ fun ViewSales(
                                 ),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = Color.White,
                                 modifier = Modifier.constrainAs(unitaryValueLabelRef) {
                                     top.linkTo(quantityLabelRef.bottom)
                                     linkTo(
@@ -149,7 +149,7 @@ fun ViewSales(
                                     saleItem.totalValue.toString()
                                 ),
                                 fontSize = 20.sp,
-                                color = Color.Black,
+                                color = Color.White,
                                 modifier = Modifier.constrainAs(totalRef) {
                                     top.linkTo(unitaryValueLabelRef.bottom, margin = 16.dp)
                                     linkTo(
@@ -189,8 +189,8 @@ fun ViewSales(
             ) {
                 Image(
                     modifier = modifier
-                        .size(50.dp)
-                        .padding(top = 16.dp)
+                        .size(100.dp)
+                        .padding(top = 24.dp)
                         .align(Alignment.CenterHorizontally),
                     painter = painterResource(id = R.drawable.ic_app_registration_24),
                     contentDescription = stringResource(id = R.string.content_description_app_registration_image),
@@ -199,7 +199,7 @@ fun ViewSales(
                     text = stringResource(id = R.string.empty_list_message, 0.toString()),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = Color.Black,
                     textAlign = TextAlign.Center,
                     modifier = modifier
                         .padding(16.dp)

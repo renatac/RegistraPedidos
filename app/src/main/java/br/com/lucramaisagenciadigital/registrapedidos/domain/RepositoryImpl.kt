@@ -4,7 +4,6 @@ import br.com.lucramaisagenciadigital.registrapedidos.database.UserDataDao
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
 import kotlinx.coroutines.flow.Flow
 
-
 class RepositoryImpl(private val userDataDao: UserDataDao) : Repository {
 
     override val usersDataOrderByRequestNumber: Flow<List<UserData>> =

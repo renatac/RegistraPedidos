@@ -12,7 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import br.com.lucramaisagenciadigital.registrapedidos.navigation.NavHost
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
 import br.com.lucramaisagenciadigital.registrapedidos.ui.theme.RegisterRequestsTheme
+import org.koin.androidx.compose.koinViewModel
 
 const val ZERO_DOUBLE = 0.0
 const val ZERO_INT = 0
@@ -24,11 +26,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navHost = rememberNavController()
+            val viewModel: UserDataViewModel = koinViewModel()
+
             RegisterRequestsTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     NavHost(
+                        viewModel,
                         navHostController = navHost
                     )
                 }
@@ -41,12 +46,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainActivityPreview() {
     val navHost = rememberNavController()
+    val viewModel: UserDataViewModel = koinViewModel()
     RegisterRequestsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = Color.Gray
         ) {
             NavHost(
+                viewModel,
                 navHostController = navHost
             )
         }

@@ -1,22 +1,30 @@
 package br.com.lucramaisagenciadigital.registrapedidos.di
 
+import androidx.room.Room
 import br.com.lucramaisagenciadigital.registrapedidos.database.AppDatabase
+import br.com.lucramaisagenciadigital.registrapedidos.database.DB_NAME
 import br.com.lucramaisagenciadigital.registrapedidos.domain.Repository
 import br.com.lucramaisagenciadigital.registrapedidos.domain.RepositoryImpl
-import br.com.lucramaisagenciadigital.registrapedidos.database.getDatabase
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
-import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
-
 private val databaseModule = module {
-    single { getDatabase(androidContext())}
+    single {
+        Room.databaseBuilder(
+            androidApplication(),
+            AppDatabase::class.java,
+            DB_NAME
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
 
-    factory { get<AppDatabase>().getDao() }
+    single { get<AppDatabase>().getDao() }
+
 }
 
 private val dataModule = module {
-    factory<Repository> { RepositoryImpl(database = get()) }
+    single<Repository> { RepositoryImpl(get()) }
 }
 
 private val presentationModule = module {

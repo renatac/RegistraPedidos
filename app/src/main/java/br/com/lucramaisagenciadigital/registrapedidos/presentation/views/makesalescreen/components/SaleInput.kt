@@ -74,11 +74,13 @@ fun SaleInput(
                     color = Color.Black,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp)
+                        .weight(1F)
                 )
                 Box(
                     modifier
-                        .padding(end = 16.dp)
+                        .padding(end = 16.dp, top = 20.dp)
                         .background(Color.Blue)
+                        .weight(0.5F)
                 ) {
                     Text(
                         text = stringResource(id = R.string.request_number),

@@ -48,9 +48,9 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-    fun deleteSaleItemByItemNumber(itemNumber: Long) {
-        viewModelScope.launch {
-            repository.deleteSaleItemByItemNumber(itemNumber)
-        }
-    }
+    // fun deleteSaleItemByItemNumber(itemNumber: Long) {
+    //     viewModelScope.launch {
+    //         repository.deleteSaleItemByItemNumber(itemNumber)
+    //     }
+    //  }
 }

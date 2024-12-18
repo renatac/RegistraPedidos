@@ -7,10 +7,18 @@ open class MyApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        setupContext(this)
         setupKoin()
     }
 
-    private fun setupKoin() {
+    open fun setupKoin() {
         DepInjectionInitializer.init(this)
+    }
+
+    companion object {
+        private lateinit var application: Application
+        private fun setupContext(app: Application) {
+            application = app
+        }
     }
 }

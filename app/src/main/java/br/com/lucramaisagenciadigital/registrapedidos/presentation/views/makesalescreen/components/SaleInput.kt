@@ -1,4 +1,4 @@
-package br.com.lucramaisagenciadigital.registrapedidos.views.makesale.components
+package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,9 +32,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
-import br.com.lucramaisagenciadigital.registrapedidos.ZERO_DOUBLE
-import br.com.lucramaisagenciadigital.registrapedidos.ZERO_INT
-import br.com.lucramaisagenciadigital.registrapedidos.database.SaleItem
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_DOUBLE
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_INT
+import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 
 private const val UNITARY_VALUE_MAX_ALLOWED = 50000
 private const val QUANTITY_MAX_ALLOWED = 100
@@ -57,38 +57,38 @@ fun SaleInput(
         val clientName = remember { mutableStateOf(String()) }
         val productName = remember { mutableStateOf(String()) }
         val quantity: MutableIntState = remember { mutableIntStateOf(ZERO_INT) }
-        val unitValue = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
+        val unitaryValue = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
         val totalQuantity = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
-        totalQuantity.doubleValue = quantity.intValue * unitValue.doubleValue
+        totalQuantity.doubleValue = quantity.intValue * unitaryValue.doubleValue
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Yellow)
         ) {
-            Text(
-                text = stringResource(id = R.string.fill_sale_register, requestNumber),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Box(
-                modifier
-                    .align(Alignment.End)
-                    .padding(end = 16.dp)
-                    .background(Color.Blue)
-            ) {
+            Row {
                 Text(
-                    text = stringResource(id = R.string.request_number),
-                    fontSize = 16.sp,
-                    color = Color.White,
+                    text = stringResource(id = R.string.fill_sale_register, requestNumber),
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
+                    color = Color.Black,
                     modifier = Modifier
-                        .padding(6.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp)
                 )
+                Box(
+                    modifier
+                        .padding(end = 16.dp)
+                        .background(Color.Blue)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.request_number),
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(6.dp)
+                    )
+                }
             }
             TextField(
                 value = clientName.value,
@@ -148,18 +148,18 @@ fun SaleInput(
                         .weight(1F)
                 )
                 TextField(
-                    value = if (unitValue.doubleValue == ZERO_DOUBLE) {
+                    value = if (unitaryValue.doubleValue == ZERO_DOUBLE) {
                         String()
                     } else {
-                        unitValue.doubleValue.toString()
+                        unitaryValue.doubleValue.toString()
                     },
                     singleLine = true,
                     onValueChange = {
-                        if (unitValue.doubleValue <= UNITARY_VALUE_MAX_ALLOWED) {
+                        if (unitaryValue.doubleValue <= UNITARY_VALUE_MAX_ALLOWED) {
                             if (it.isEmpty() || it.isBlank()) {
-                                unitValue.doubleValue = ZERO_DOUBLE
+                                unitaryValue.doubleValue = ZERO_DOUBLE
                             } else {
-                                unitValue.doubleValue = it.toDouble()
+                                unitaryValue.doubleValue = it.toDouble()
                             }
                         }
                     },
@@ -174,13 +174,13 @@ fun SaleInput(
                         keyboardType = KeyboardType.Decimal
                     ),
                     supportingText = {
-                        if (unitValue.doubleValue == ZERO_DOUBLE) {
+                        if (unitaryValue.doubleValue == ZERO_DOUBLE) {
                             Text(text = stringResource(id = R.string.bigger_than_zero_double_message))
-                        } else if (unitValue.doubleValue > UNITARY_VALUE_MAX_ALLOWED) {
+                        } else if (unitaryValue.doubleValue > UNITARY_VALUE_MAX_ALLOWED) {
                             Text(text = stringResource(id = R.string.smaller_than_fifty_thousand_message))
                         }
                     },
-                    isError = unitValue.doubleValue == ZERO_DOUBLE,
+                    isError = unitaryValue.doubleValue == ZERO_DOUBLE,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, top = 4.dp)
                         .fillMaxWidth()
@@ -214,7 +214,7 @@ fun SaleInput(
                         clientName,
                         productName,
                         quantity,
-                        unitValue,
+                        unitaryValue,
                         totalQuantity
                     )
                 }) {
@@ -226,10 +226,10 @@ fun SaleInput(
                 .weight(1F),
                 onClick = {
                     val saleItem = SaleItem(
-                        productName.value,
-                        quantity.intValue,
-                        unitValue.doubleValue,
-                        totalQuantity.doubleValue
+                        product = productName.value,
+                        quantity = quantity.intValue,
+                        unitaryValue = unitaryValue.doubleValue,
+                        totalValue = totalQuantity.doubleValue
                     )
                     onAddButtonClicked(saleItem)
                 }) {

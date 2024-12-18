@@ -1,4 +1,4 @@
-package br.com.lucramaisagenciadigital.registrapedidos
+package br.com.lucramaisagenciadigital.registrapedidos.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,18 +12,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import br.com.lucramaisagenciadigital.registrapedidos.navigation.NavHost
-import br.com.lucramaisagenciadigital.registrapedidos.ui.theme.RegistraPedidosTheme
+import br.com.lucramaisagenciadigital.registrapedidos.ui.theme.RegisterRequestsTheme
 
 const val ZERO_DOUBLE = 0.0
 const val ZERO_INT = 0
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val navHost = rememberNavController()
-            RegistraPedidosTheme {
+            RegisterRequestsTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainActivityPreview() {
     val navHost = rememberNavController()
-    RegistraPedidosTheme {
+    RegisterRequestsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = Color.Gray

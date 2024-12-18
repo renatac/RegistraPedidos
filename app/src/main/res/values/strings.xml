@@ -24,4 +24,5 @@
     <string name="smaller_than_fifty_thousand_message">Por favor, digite um valor unitário \u2265 R$ 50.000</string>
     <string name="bigger_than_zero_int_message">Por favor, digite um valor > 0.</string>
     <string name="smaller_than_one_hundred_message">Por favor, digite uma quantidade \u2265 100.</string>
+    <string name="empty_list_message">Você não possui vendas adicionadas. Preenchar os dados acima para adicionar uma venda.</string>
 </resources>

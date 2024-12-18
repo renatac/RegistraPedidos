@@ -1,4 +1,4 @@
-package br.com.lucramaisagenciadigital.registrapedidos.views.main
+package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.mainscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import br.com.lucramaisagenciadigital.registrapedidos.views.main.MainScreen
-import br.com.lucramaisagenciadigital.registrapedidos.views.makesale.MakeSaleScreen
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.mainscreen.MainScreen
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.MakeSaleScreen
 
 @Composable
 fun NavHost(

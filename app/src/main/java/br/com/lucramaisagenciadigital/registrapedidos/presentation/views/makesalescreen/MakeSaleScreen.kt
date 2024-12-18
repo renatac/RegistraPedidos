@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -35,12 +37,14 @@ fun MakeSaleScreen(
     val allUsersData: List<UserData>? = sharedViewModel.allUsersDataStateFlow.collectAsState().value
     val userData: UserData? = sharedViewModel.userDataStateFlow.collectAsState().value
 
-    MakeSaleScreenContent(modifier, userData?.saleItemList?.toMutableStateList())
+    val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
+    saleItemMutableStateList.addAll(userData?.saleItemList.orEmpty())
+    MakeSaleScreenContent(modifier, saleItemMutableStateList)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MakeSaleScreenContent(modifier: Modifier, saleItemList: MutableList<SaleItem>?) {
+fun MakeSaleScreenContent(modifier: Modifier, saleItemList: SnapshotStateList<SaleItem>) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -60,13 +64,13 @@ fun MakeSaleScreenContent(modifier: Modifier, saleItemList: MutableList<SaleItem
             ) {
                 // TODO (Changing 1 to requestNumber)
                 SaleInput(modifier, "1") { saleItem: SaleItem ->
-                    saleItemList?.add(saleItem)
+                    saleItemList.add(saleItem)
                 }
                 ViewSales(
                     modifier,
                     saleItemsList = saleItemList,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
-                        saleItemList?.remove(saleItem)
+                        saleItemList.remove(saleItem)
                     }
                 )
             }

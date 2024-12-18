@@ -233,6 +233,13 @@ fun SaleInput(
                         unitaryValue = unitaryValue.doubleValue,
                         totalValue = totalQuantity.doubleValue
                     )
+                    clearFields(
+                        clientName,
+                        productName,
+                        quantity,
+                        unitaryValue,
+                        totalQuantity
+                    )
                     onAddButtonClicked(saleItem)
                 }) {
                 Text(text = stringResource(id = R.string.adding))

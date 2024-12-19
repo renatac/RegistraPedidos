@@ -27,7 +27,4 @@ interface UserDataDao {
 
     @Query("DELETE FROM usersData WHERE name=:userName")
     suspend fun deleteUserDataByName(userName: String)
-
-   // @Query("DELETE FROM saleItem WHERE itemNumber=:number")
-    //suspend fun deleteSaleItemByItemNumber(number: Long)
 }

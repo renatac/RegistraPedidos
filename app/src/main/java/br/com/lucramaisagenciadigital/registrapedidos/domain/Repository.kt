@@ -10,5 +10,4 @@ interface Repository {
     suspend fun getUserDataByUserName(name: String): UserData
     suspend fun deleteUserDataByRequestNumber(requestNumber: Long)
     suspend fun deleteUserDataByName(name: String)
-  //  suspend fun deleteSaleItemByItemNumber(itemNumber: Long)
 }

@@ -20,7 +20,6 @@ private val databaseModule = module {
     }
 
     single { get<AppDatabase>().getDao() }
-
 }
 
 private val dataModule = module {

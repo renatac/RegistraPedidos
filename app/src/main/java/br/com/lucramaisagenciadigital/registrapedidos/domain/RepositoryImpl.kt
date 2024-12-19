@@ -28,8 +28,4 @@ class RepositoryImpl(private val userDataDao: UserDataDao) : Repository {
     override suspend fun deleteUserDataByName(name: String) {
         return userDataDao.deleteUserDataByName(name)
     }
-
-    //  override suspend fun deleteSaleItemByItemNumber(itemNumber: Long) {
-    //    return userDataDao.deleteSaleItemByItemNumber(itemNumber)
-    //}
 }

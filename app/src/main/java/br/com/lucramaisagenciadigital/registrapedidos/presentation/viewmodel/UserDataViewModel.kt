@@ -29,6 +29,8 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
+    // TODO("Esse app será continuado e usarei todas essas funções abaixo,
+    // pois terei uma tela de filtros para a melhor visualização.")
     fun getUserDataByRequestNumber(requestNumber: Long) {
         viewModelScope.launch {
             _userDataStateFlow.value = repository.getUserDataByRequestNumber(requestNumber)

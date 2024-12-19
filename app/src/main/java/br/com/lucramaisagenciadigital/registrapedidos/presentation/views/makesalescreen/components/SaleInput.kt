@@ -97,6 +97,7 @@ fun SaleInput(
             TextField(
                 value = clientName.value,
                 onValueChange = { clientName.value = it },
+                singleLine = true,
                 placeholder = { Text(text = stringResource(id = R.string.client_name)) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 4.dp)
@@ -105,6 +106,7 @@ fun SaleInput(
             TextField(
                 value = productName.value,
                 onValueChange = { productName.value = it },
+                singleLine = true,
                 placeholder = { Text(text = stringResource(id = R.string.product_name)) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 4.dp)

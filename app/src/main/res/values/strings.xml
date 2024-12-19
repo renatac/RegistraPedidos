@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">RegistraPedidos</string>
     <string name="registry_requests">Registra Pedidos</string>
-    <string name="sales_total">Total de vendas registradas: %s</string>
+    <string name="slogan_phase_subtitle">As vendas que você realizou agora estão na palma da sua mão.</string>
     <string name="doing_sale">Fazer uma venda</string>
+    <string name="all_sales">Todas as vendas</string>
     <string name="see_sales_made">Ver vendas realizadas</string>
     <string name="fill_sale_register">Preencha os dados da venda</string>
-    <string name="request_number">Número do pedido: %s</string>
+    <!--TODO - mudar para ser o número do pedido quando aceitar mais de 1-->
+    <string name="request_number">Número do pedido: 1</string>
     <string name="client_name">Nome do cliente</string>
     <string name="product_name">Nome do produto</string>
     <string name="total_value"><b>Valor total</b>: %s</string>
@@ -27,5 +29,7 @@
     <string name="bigger_than_zero_int_message">Por favor, digite um valor > 0.</string>
     <string name="smaller_than_one_hundred_message">Por favor, digite uma quantidade \u2265 100.</string>
     <string name="empty_list_message">Você não possui vendas adicionadas. Preencha os dados acima para adicionar uma venda.</string>
+    <string name="you_do_not_have_sales">Você não possui vendas.</string>
     <string name="empty_fields">Por favor, preencha todos os campos.</string>
+    <string name="client">Cliente: %s</string>
 </resources>

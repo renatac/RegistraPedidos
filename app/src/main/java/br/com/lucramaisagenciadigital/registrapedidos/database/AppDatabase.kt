@@ -11,7 +11,6 @@ private lateinit var INSTANCE: AppDatabase
 
 @Database(
     entities = [UserData::class],
-    // [SaleItem::class],
     version = 2,
     exportSchema = false
 )

@@ -36,7 +36,7 @@ fun AddSaleScreen(
     val allUsersData: List<UserData>? = viewModel.allUsersDataStateFlow.collectAsState().value
     val userData: UserData? = viewModel.userDataStateFlow.collectAsState().value
 
-    val allUsersDataOrderByRequestNumber by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
+    val allUsersDataOrderByRequestNumber: List<UserData?> by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
         initial = listOf<UserData>()
     )
     println(allUsersDataOrderByRequestNumber)
@@ -103,7 +103,8 @@ fun AddSaleScreenContent(
                     }
                 )
             }
-        })
+        }
+    )
 }
 
 @Preview

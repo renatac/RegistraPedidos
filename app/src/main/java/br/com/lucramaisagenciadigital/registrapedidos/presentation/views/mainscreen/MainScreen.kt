@@ -63,23 +63,32 @@ fun MainScreenContent(
         .fillMaxWidth()
         .fillMaxHeight()
         .background(Color.Yellow)) {
-        Image(
+        Text(
+            text = stringResource(id = R.string.registry_requests, 0.toString()),
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = Color.Black,
             modifier = modifier
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
+        )
+        Image(
+            modifier = Modifier
                 .size(200.dp)
-                .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(id = R.drawable.ic_app_registration_24),
             contentDescription = stringResource(id = R.string.content_description_app_registration_image),
         )
         // TODO("Trocar o zero pelo valor total de verdade")
         Text(
-            text = stringResource(id = R.string.sales_total, 0.toString()),
+            text = stringResource(id = R.string.slogan_phase_subtitle, 0.toString()),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = Color.Black,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(32.dp)
                 .fillMaxWidth()
         )
 
@@ -88,11 +97,12 @@ fun MainScreenContent(
                 .fillMaxWidth()
                 .padding(top = 48.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
             onClick = {
-                navController.navigate(ScreenRoutes.MAKING_SALE.name)
+                navController.navigate(ScreenRoutes.ADD_SALE_ROUTE.name)
             }) {
             Text(
                 text = stringResource(id = R.string.doing_sale),
-                fontSize = 22.sp
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -101,11 +111,12 @@ fun MainScreenContent(
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
             onClick = {
-                // TODO
+                navController.navigate(ScreenRoutes.SEE_ALL_SALES_ROUTE.name)
             }) {
             Text(
                 text = stringResource(id = R.string.see_sales_made),
-                fontSize = 22.sp
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
             )
         }
     }

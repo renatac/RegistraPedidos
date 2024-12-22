@@ -34,7 +34,10 @@ fun NavHost(
         composable(route = ScreenRoutes.SEE_ALL_SALES_ROUTE.name) {
             SeeAllSalesScreen(
                 Modifier,
-                viewModel
+                viewModel,
+                onBackButtonClicked = {
+                    navHostController.popBackStack()
+                }
             )
         }
     }

@@ -2,10 +2,9 @@ package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.seeaas
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -60,28 +59,24 @@ fun ViewAllSales(
             }
         } else {
             Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .background(Color.LightGray)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    modifier = modifier
-                        .size(100.dp)
-                        .padding(top = 24.dp)
-                        .align(Alignment.CenterHorizontally),
-                    painter = painterResource(id = R.drawable.ic_app_registration_24),
-                    contentDescription = stringResource(id = R.string.content_description_app_registration_image),
-                )
                 Text(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     text = stringResource(id = R.string.you_do_not_have_sales),
-                    fontSize = 20.sp,
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    modifier = modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
+                    textAlign = TextAlign.Center
+                )
+                Image(
+                    modifier = modifier.size(400.dp),
+                    painter = painterResource(id = R.drawable.ic_app_registration_24),
+                    contentDescription = stringResource(id = R.string.content_description_app_registration_image),
                 )
             }
         }

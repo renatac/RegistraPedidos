@@ -3,14 +3,7 @@ package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.seeaas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.utils.components.RegisterOrdersTopAppBar
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.seeaasalesscreen.components.ViewAllSales
 import org.koin.androidx.compose.koinViewModel
@@ -32,7 +25,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SeeAllSalesScreen(
     modifier: Modifier,
-    viewModel: UserDataViewModel
+    viewModel: UserDataViewModel,
+    onBackButtonClicked: () -> Unit
 ) {
     val allUsersDataOrderByRequestNumber: List<UserData?> by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
         initial = emptyList()
@@ -44,35 +38,24 @@ fun SeeAllSalesScreen(
         userDataMutableStateList.clear()
         allUsersDataOrderByRequestNumber.filterNotNull().let { userDataMutableStateList.addAll(it) }
     }
-    SeeAllSalesScreenContent(modifier, userDataMutableStateList)
+    SeeAllSalesScreenContent(
+        modifier,
+        userDataMutableStateList
+    ) { onBackButtonClicked.invoke() }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeeAllSalesScreenContent(
     modifier: Modifier,
-    userDataMutableStateList: SnapshotStateList<UserData>
+    userDataMutableStateList: SnapshotStateList<UserData>,
+    onBackButtonClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.all_sales),
-                        fontSize = 20.sp
-                    )
-                },
-                // TODO (Implementar a volta)
-               /* navigationIcon = {
-                    IconButton(onClick = {
-
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }*/
+            RegisterOrdersTopAppBar(
+                Modifier,
+                stringResource(id = R.string.all_sales),
+                onBackButtonClicked = { onBackButtonClicked.invoke() }
             )
         },
         content = { contentPadding ->
@@ -81,8 +64,7 @@ fun SeeAllSalesScreenContent(
                     .padding(contentPadding)
                     .background(Color.LightGray)
             ) {
-                ViewAllSales(
-                    modifier,
+                ViewAllSales(Modifier,
                     userDataList = userDataMutableStateList,
                     onDeleteButtonClicked = { userDataItem: UserData ->
                         userDataMutableStateList.remove(userDataItem)
@@ -97,5 +79,5 @@ fun SeeAllSalesScreenContent(
 @Composable
 fun SeeAllSalesScreenPreview() {
     val viewModel: UserDataViewModel = koinViewModel()
-    SeeAllSalesScreen(modifier = Modifier, viewModel)
+    SeeAllSalesScreen(modifier = Modifier, viewModel) {}
 }

@@ -2,24 +2,30 @@ package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.seeaas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
+import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_INT
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.utils.components.RegisterOrdersTopAppBar
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.seeaasalesscreen.components.ViewAllSales
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -31,25 +37,34 @@ fun SeeAllSalesScreen(
     val allUsersDataOrderByRequestNumber: List<UserData?> by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
         initial = emptyList()
     )
+    val allSaleItemsOrderByUserDataId: List<SaleItem?> by viewModel.allSaleItemsOrderByUserDataId.collectAsState(
+        initial = emptyList()
+    )
 
-    val userDataMutableStateList = remember { mutableStateListOf<UserData>() }
+    //val userDataMutableStateList = remember { mutableStateOf<List<UserData?>>(allUsersDataOrderByRequestNumber) }
 
-    LaunchedEffect(key1 = allUsersDataOrderByRequestNumber) {
-        userDataMutableStateList.clear()
-        allUsersDataOrderByRequestNumber.filterNotNull().let { userDataMutableStateList.addAll(it) }
-    }
+    /* LaunchedEffect(key1 = allUsersDataOrderByRequestNumber) {
+         userDataMutableStateList.clear()
+         allUsersDataOrderByRequestNumber.filterNotNull().let { userDataMutableStateList.addAll(it) }
+     }*/
     SeeAllSalesScreenContent(
         modifier,
-        userDataMutableStateList
-    ) { onBackButtonClicked.invoke() }
+        viewModel,
+        allUsersDataOrderByRequestNumber,
+        allSaleItemsOrderByUserDataId,
+        onBackButtonClicked
+    )
 }
 
 @Composable
 fun SeeAllSalesScreenContent(
     modifier: Modifier,
-    userDataMutableStateList: SnapshotStateList<UserData>,
+    viewModel: UserDataViewModel,
+    userDataList: List<UserData?>,
+    saleItemsList: List<SaleItem?>,
     onBackButtonClicked: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             RegisterOrdersTopAppBar(
@@ -64,12 +79,38 @@ fun SeeAllSalesScreenContent(
                     .padding(contentPadding)
                     .background(Color.LightGray)
             ) {
-                ViewAllSales(Modifier,
-                    userDataList = userDataMutableStateList,
-                    onDeleteButtonClicked = { userDataItem: UserData ->
-                        userDataMutableStateList.remove(userDataItem)
+                ViewAllSales(
+                    Modifier,
+                    userDataList = userDataList,
+                    saleItemList = saleItemsList,
+                    onDeleteOneSaleButtonClicked = { itemNumber: Long ->
+                        coroutineScope.launch {
+                            viewModel.getUserDataWithSaleItems(itemNumber)
+                            viewModel.userDataWithSaleItems.collect { userDataWithSaleItems ->
+                                if (userDataWithSaleItems != null && userDataWithSaleItems.saleItems.isNotEmpty()) {
+                                    viewModel.deleteSaleItem(userDataWithSaleItems.saleItems[ZERO_INT])
+                                }
+                            }
+                        }
                     }
                 )
+            }
+        },
+        bottomBar = {
+            if (userDataList.isNotEmpty()) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, start = 24.dp, end = 24.dp, bottom = 40.dp),
+                    onClick = {
+                        viewModel.deleteUserDataByRequestNumber(1L)
+                    }) {
+                    Text(
+                        text = stringResource(id = R.string.deleting_all_sales),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     )

@@ -29,29 +29,32 @@ import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesal
 @Composable
 fun ViewAllSales(
     modifier: Modifier = Modifier,
-    userDataList: List<UserData>? = emptyList(),
-    onDeleteButtonClicked: (UserData) -> Unit
+    userDataList: List<UserData?> = emptyList(),
+    saleItemList: List<SaleItem?> = emptyList(),
+    onDeleteOneSaleButtonClicked: (Long) -> Unit
 ) {
     Column(Modifier.background(Color.LightGray)) {
-        if (userDataList?.isNotEmpty() == true) {
+        if (userDataList.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
                     .background(Color.LightGray)
                     .fillMaxSize()
             ) {
-                items(userDataList) { userData ->
+                items(userDataList) { userData: UserData? ->
+                    val saleList = saleItemList.filter { it?.userDataId == userData?.requestNumber }
                     Column(modifier = Modifier.padding(16.dp)) {
-                        BoxTitle(Modifier, stringResource(id = R.string.client, userData.name))
-                        userData.saleItemList.forEachIndexed { index, saleItem ->
-                            ViewSaleItem(
-                                modifier,
-                                saleItem
-                            ) {
-                                // TODO ( Manipular onDeleteButtonClicked, provavelmente usando o
-                                // index --> Type mismatch.
-                                //Required: UserData
-                                //Found: SaleItem
-                                //onDeleteButtonClicked(it)
+                        BoxTitle(
+                            Modifier,
+                            stringResource(id = R.string.client, userData?.name.orEmpty())
+                        )
+                        saleList.forEach { saleItem ->
+                            saleItem?.let {
+                                ViewSaleItem(
+                                    modifier,
+                                    it
+                                ) { item ->
+                                    onDeleteOneSaleButtonClicked(item.itemNumber)
+                                }
                             }
                         }
                     }
@@ -87,21 +90,18 @@ fun ViewAllSales(
 @Composable
 fun ViewAllSalesPreview() {
     val userDataList = listOf(
-        UserData(0, "User A", listOf(SaleItem(0, "Product X", 5, 2.5, 12.5))),
+        UserData(0, "User A"),
         UserData(
-            1,
-            "User B",
-            listOf(SaleItem(1, "Product Y", 2, 10.0, 20.0), SaleItem(4, "Product Z", 3, 5.0, 15.0))
+            1L,
+            "User B"
         ),
         UserData(
-            2,
-            "User B",
-            listOf(SaleItem(2, "Product Y", 2, 10.0, 20.0), SaleItem(5, "Product Z", 3, 5.0, 15.0))
+            2L,
+            "User B"
         ),
         UserData(
-            3,
-            "User B",
-            listOf(SaleItem(3, "Product Y", 2, 10.0, 20.0), SaleItem(6, "Product Z", 3, 5.0, 15.0))
+            3L,
+            "User B"
         )
     )
     ViewAllSales(userDataList = userDataList) {}

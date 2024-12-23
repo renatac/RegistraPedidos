@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
-import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_DOUBLE
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_INT
 
@@ -44,8 +43,7 @@ private const val QUANTITY_MAX_ALLOWED = 100
 @Composable
 fun SaleInput(
     modifier: Modifier,
-    requestNumber: String,
-    onAddButtonClicked: (SaleItem, String) -> Unit
+    onAddButtonClicked: (String, Int, Double, Double, String) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -70,7 +68,7 @@ fun SaleInput(
         ) {
             Row {
                 Text(
-                    text = stringResource(id = R.string.fill_sale_register, requestNumber),
+                    text = stringResource(id = R.string.fill_sale_register),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -239,11 +237,12 @@ fun SaleInput(
                             totalQuantity.doubleValue
                         )
                     ) {
-                        val saleItem = SaleItem(
-                            product = productName.value,
-                            quantity = quantity.intValue,
-                            unitaryValue = unitaryValue.doubleValue,
-                            totalValue = totalQuantity.doubleValue
+                        onAddButtonClicked(
+                            productName.value,
+                            quantity.intValue,
+                            unitaryValue.doubleValue,
+                            totalQuantity.doubleValue,
+                            clientName.value
                         )
                         clearFields(
                             productName,
@@ -251,7 +250,6 @@ fun SaleInput(
                             unitaryValue,
                             totalQuantity
                         )
-                        onAddButtonClicked(saleItem, clientName.value)
                     } else {
                         Toast.makeText(context, emptyFieldsString, Toast.LENGTH_LONG).show()
                     }
@@ -292,5 +290,5 @@ private fun clearFields(
 @Preview
 @Composable
 fun SaleInputPreview() {
-    SaleInput(modifier = Modifier, requestNumber = "1") { _, _ -> }
+    SaleInput(modifier = Modifier) { _, _, _, _, _-> }
 }

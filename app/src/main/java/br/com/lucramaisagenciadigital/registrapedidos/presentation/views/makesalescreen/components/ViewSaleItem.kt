@@ -138,6 +138,6 @@ fun ViewSaleItem(
 fun ViewSaleItemScreenPreview() {
     ViewSaleItem(
         modifier = Modifier, saleItem =
-        SaleItem(1, "Product Y", 2, 10.0, 20.0)
+        SaleItem(1, 1, "Product Y", 2, 10.0, 20.0)
     ) { _ -> }
 }

@@ -113,12 +113,16 @@ fun ViewSalesPreview() {
     // TODO ("Removing mock")
     val saleItems = listOf(
         SaleItem(
+            1,
+            1,
             product = "Notebook",
             quantity = 2,
             unitaryValue = 1000.50,
             totalValue = 2100.00
         ),
         SaleItem(
+            1,
+            1,
             product = "Notebook",
             quantity = 2,
             unitaryValue = 1000.50,

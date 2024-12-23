@@ -1,11 +1,23 @@
 package br.com.lucramaisagenciadigital.registrapedidos.database.entities
 
-import androidx.room.TypeConverters
-import br.com.lucramaisagenciadigital.registrapedidos.database.utils.UserDataConverters
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
-@TypeConverters(UserDataConverters::class)
+@Entity(
+    tableName = "saleItem",
+    foreignKeys = [ForeignKey(
+        entity = UserData::class,
+        parentColumns = ["requestNumber"],
+        childColumns = ["userDataId"],
+        onDelete = ForeignKey.CASCADE
+    )],
+    indices = [Index("userDataId")]
+)
 data class SaleItem(
-    val itemNumber: Long? = 0L,
+    @PrimaryKey(autoGenerate = true) val itemNumber: Long = 0L,
+    val userDataId: Long,
     val product: String,
     val quantity: Int,
     val unitaryValue: Double,

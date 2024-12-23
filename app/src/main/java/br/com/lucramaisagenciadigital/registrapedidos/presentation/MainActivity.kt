@@ -18,6 +18,7 @@ import org.koin.androidx.compose.koinViewModel
 
 const val ZERO_DOUBLE = 0.0
 const val ZERO_INT = 0
+const val ZERO_LONG = 0L
 
 class MainActivity : ComponentActivity() {
 

@@ -8,10 +8,12 @@
     <string name="fill_sale_register">Preencha os dados da venda</string>
     <string name="client_name">Nome do cliente</string>
     <string name="product_name">Nome do produto</string>
+    <string name="discount">Desconto</string>
     <string name="total_value"><b>Valor total</b>: %s</string>
     <string name="adding">Adicionar</string>
     <string name="cleaning">Limpar</string>
     <string name="cancelling">Cancelar</string>
+    <string name="apply_discount">Aplicar desconto</string>
     <string name="saving">Salvar</string>
     <string name="product">Produto: %s</string>
     <string name="quantity">Quantidade: %s</string>

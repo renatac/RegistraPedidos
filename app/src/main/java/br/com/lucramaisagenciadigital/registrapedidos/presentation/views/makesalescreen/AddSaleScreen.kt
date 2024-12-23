@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -113,11 +114,29 @@ fun AddSaleScreenContent(
                     saleItemsList = saleItemMutableStateList,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
                         saleItemMutableStateList.remove(saleItem)
+                    },
+                    onCalculateDiscount = { discount ->
+                        calculateDiscount(discount, saleItemMutableStateList)
                     }
                 )
             }
         }
     )
+}
+
+fun calculateDiscount(
+    discountNumber: Double,
+    saleItemMutableStateList: SnapshotStateList<SaleItem>
+) {
+    val total = saleItemMutableStateList.sumOf { it.totalValue }
+    val saleList = mutableListOf<SaleItem>()
+
+    saleItemMutableStateList.forEach {
+        saleList.add(it.copy(totalValue = it.totalValue -
+                (discountNumber * (it.totalValue / total))))
+    }
+    saleItemMutableStateList.clear()
+    saleItemMutableStateList.addAll(saleList)
 }
 
 @Preview

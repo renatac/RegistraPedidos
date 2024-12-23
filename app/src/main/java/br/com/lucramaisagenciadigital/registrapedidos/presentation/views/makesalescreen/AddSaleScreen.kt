@@ -1,5 +1,6 @@
 package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.com.lucramaisagenciadigital.registrapedidos.R
@@ -55,6 +57,7 @@ fun AddSaleScreenContent(
     val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
     var clientName = String()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             RegisterOrdersTopAppBar(
@@ -82,6 +85,7 @@ fun AddSaleScreenContent(
 
                             saleItemDeferreds.awaitAll() // Wait for all SaleItem insertions to complete
                         }
+                        Toast.makeText(context, context.getString(R.string.sales_added), Toast.LENGTH_SHORT).show()
                         navigateToMainScreen()
                     }
                 )

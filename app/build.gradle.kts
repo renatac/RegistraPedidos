@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.junit.ktx)
     ksp(libs.room.compiler)
     implementation(libs.gson)
 
@@ -86,4 +87,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    testImplementation(libs.io.mockk)
+    testImplementation(libs.androidx.arch.core)
+    testImplementation(libs.org.jetbrains.kotlinx)
+    testImplementation(libs.androidx.room)
+    testImplementation(libs.androidx.test)
+    testImplementation(libs.androidx.test.runner)
 }

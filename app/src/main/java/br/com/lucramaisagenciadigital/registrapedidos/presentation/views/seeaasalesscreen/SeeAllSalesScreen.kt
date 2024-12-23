@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
-import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_INT
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.utils.components.RegisterOrdersTopAppBar
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.seeaasalesscreen.components.ViewAllSales
@@ -41,12 +40,6 @@ fun SeeAllSalesScreen(
         initial = emptyList()
     )
 
-    //val userDataMutableStateList = remember { mutableStateOf<List<UserData?>>(allUsersDataOrderByRequestNumber) }
-
-    /* LaunchedEffect(key1 = allUsersDataOrderByRequestNumber) {
-         userDataMutableStateList.clear()
-         allUsersDataOrderByRequestNumber.filterNotNull().let { userDataMutableStateList.addAll(it) }
-     }*/
     SeeAllSalesScreenContent(
         modifier,
         viewModel,
@@ -83,14 +76,12 @@ fun SeeAllSalesScreenContent(
                     Modifier,
                     userDataList = userDataList,
                     saleItemList = saleItemsList,
-                    onDeleteOneSaleButtonClicked = { itemNumber: Long ->
+                    onDeleteOneSaleButtonClicked = { saleItem: SaleItem ->
+                        if(saleItemsList.filter { it?.userDataId == saleItem.userDataId }.size == 1) {
+                            viewModel.deleteUserDataByRequestNumber(saleItem.userDataId)
+                        }
                         coroutineScope.launch {
-                            viewModel.getUserDataWithSaleItems(itemNumber)
-                            viewModel.userDataWithSaleItems.collect { userDataWithSaleItems ->
-                                if (userDataWithSaleItems != null && userDataWithSaleItems.saleItems.isNotEmpty()) {
-                                    viewModel.deleteSaleItem(userDataWithSaleItems.saleItems[ZERO_INT])
-                                }
-                            }
+                            viewModel.deleteSaleItemByItemNumber(saleItem.itemNumber)
                         }
                     }
                 )
@@ -101,9 +92,9 @@ fun SeeAllSalesScreenContent(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp, start = 24.dp, end = 24.dp, bottom = 40.dp),
+                        .padding(top = 8.dp, start = 24.dp, end = 24.dp, bottom = 48.dp),
                     onClick = {
-                        viewModel.deleteUserDataByRequestNumber(1L)
+                        viewModel.deleteAllUserData()
                     }) {
                     Text(
                         text = stringResource(id = R.string.deleting_all_sales),

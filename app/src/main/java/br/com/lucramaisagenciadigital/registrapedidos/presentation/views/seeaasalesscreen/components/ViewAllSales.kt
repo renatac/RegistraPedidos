@@ -31,7 +31,7 @@ fun ViewAllSales(
     modifier: Modifier = Modifier,
     userDataList: List<UserData?> = emptyList(),
     saleItemList: List<SaleItem?> = emptyList(),
-    onDeleteOneSaleButtonClicked: (Long) -> Unit
+    onDeleteOneSaleButtonClicked: (SaleItem) -> Unit
 ) {
     Column(Modifier.background(Color.LightGray)) {
         if (userDataList.isNotEmpty()) {
@@ -52,8 +52,8 @@ fun ViewAllSales(
                                 ViewSaleItem(
                                     modifier,
                                     it
-                                ) { item ->
-                                    onDeleteOneSaleButtonClicked(item.itemNumber)
+                                ) { saleItem: SaleItem ->
+                                    onDeleteOneSaleButtonClicked(saleItem)
                                 }
                             }
                         }

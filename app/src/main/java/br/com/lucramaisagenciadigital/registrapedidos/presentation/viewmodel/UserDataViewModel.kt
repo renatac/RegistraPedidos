@@ -4,17 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
-import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserDataWithSaleItems
 import br.com.lucramaisagenciadigital.registrapedidos.domain.Repository
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_LONG
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
 class UserDataViewModel(val repository: Repository) : ViewModel() {
@@ -25,9 +21,6 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
     private val _userDataStateFlow = MutableStateFlow<UserData?>(null)
     val userDataStateFlow: StateFlow<UserData?> = _userDataStateFlow
 
-    private val _userDataWithSaleItems = MutableStateFlow<UserDataWithSaleItems?>(null)
-    val userDataWithSaleItems: StateFlow<UserDataWithSaleItems?> = _userDataWithSaleItems
-
     val allUsersDataOrderByRequestNumber: Flow<List<UserData?>> =
         repository.usersDataOrderByRequestNumber
 
@@ -35,6 +28,8 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         repository.saleItemsOrderByUserDataId
 
     var userDataId: Long = ZERO_LONG
+
+    // TODO ("Será usado depois")
     var saleDataId: Long = ZERO_LONG
 
     suspend fun insertUserData(userData: UserData): Long {
@@ -47,37 +42,15 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-    // TODO("Esse app será continuado e usarei todas essas funções abaixo,
-    // pois terei uma tela de filtros para a melhor visualização.")
-    fun getUserDataByRequestNumber(requestNumber: Long) {
-        viewModelScope.launch {
-            _userDataStateFlow.value = repository.getUserDataByRequestNumber(requestNumber)
-        }
-    }
-
-    fun getUserDataByUserName(name: String) {
-        viewModelScope.launch {
-            _userDataStateFlow.value = repository.getUserDataByUserName(name)
-        }
-    }
-
-    suspend fun getUserDataWithSaleItems(requestNumber: Long) {
-        _userDataWithSaleItems.value = viewModelScope.async {
-            withContext(Dispatchers.IO) {
-                repository.getUserDataWithSaleItems(requestNumber)
-            }
-        }.await()
-    }
-
     fun deleteUserDataByRequestNumber(requestNumber: Long) {
         viewModelScope.launch {
             repository.deleteUserDataByRequestNumber(requestNumber)
         }
     }
 
-    fun deleteUserDataByName(name: String) {
+    fun deleteAllUserData() {
         viewModelScope.launch {
-            repository.deleteUserDataByName(name)
+            repository.deleteAllUserData()
         }
     }
 
@@ -91,9 +64,9 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-    suspend fun deleteSaleItem(saleItem: SaleItem) {
+    suspend fun deleteSaleItemByItemNumber(itemNumber: Long) {
         viewModelScope.launch {
-            repository.deleteSaleItem(saleItem)
+            repository.deleteSaleItemByItemNumber(itemNumber)
         }
     }
 }

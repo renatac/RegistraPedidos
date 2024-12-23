@@ -66,31 +66,21 @@ fun SaleInput(
                 .fillMaxWidth()
                 .background(Color.Yellow)
         ) {
-            Row {
+            Box(
+                modifier
+                    .padding(top = 20.dp, bottom = 20.dp)
+                    .background(Color.Blue)
+                    .fillMaxWidth()
+            ) {
                 Text(
                     text = stringResource(id = R.string.fill_sale_register),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = Color.White,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp)
-                        .weight(1F)
+                        .padding(start = 16.dp, end = 16.dp)
+                        .align(Alignment.Center)
                 )
-                Box(
-                    modifier
-                        .padding(end = 16.dp, top = 20.dp)
-                        .background(Color.Blue)
-                        .weight(0.5F)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.request_number),
-                        fontSize = 16.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(6.dp)
-                    )
-                }
             }
             TextField(
                 value = clientName.value,

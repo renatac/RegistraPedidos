@@ -24,10 +24,11 @@
     <string name="content_description_trash_image">imagem da lixeira</string>
     <string name="content_description_app_registration_image">imagem anotacao</string>
     <string name="sales_added">Vendas adicionadas</string>
-    <string name="bigger_than_zero_double_message">Por favor, digite um valor > 0.0</string>
-    <string name="smaller_than_fifty_thousand_message">Por favor, digite um valor unitário \u2265 R$ 50.000</string>
+    <string name="bigger_than_zero_and_smaller_than_one_hundred_message">Por favor, digite um valor > 0.0 e \u2265 100.</string>
+    <string name="bigger_than_zero_and_smaller_than_fifty_thousand_message">Por favor, digite um valor > 0.0 e \u2265 R$ 50.000.</string>
+    <string name="smaller_than_fifty_thousand_message">Por favor, digite um valor unitário \u2264 R$ 50.000</string>
     <string name="bigger_than_zero_int_message">Por favor, digite um valor > 0.</string>
-    <string name="smaller_than_one_hundred_message">Por favor, digite uma quantidade \u2265 100.</string>
+    <string name="smaller_than_one_hundred_message">Por favor, digite uma quantidade \u2264 100.</string>
     <string name="empty_list_message">Você não possui vendas adicionadas. Preencha os dados acima para adicionar uma venda.</string>
     <string name="you_do_not_have_sales">Você não possui vendas</string>
     <string name="empty_fields">Por favor, preencha todos os campos.</string>

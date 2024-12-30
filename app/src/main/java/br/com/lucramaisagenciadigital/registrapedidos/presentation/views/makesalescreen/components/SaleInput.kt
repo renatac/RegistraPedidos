@@ -60,7 +60,6 @@ fun SaleInput(
         val productName = remember { mutableStateOf(String()) }
         val quantity: MutableIntState = remember { mutableIntStateOf(ZERO_INT) }
         // It stores the quantity value show the text field
-
         var quantityText by remember { mutableStateOf(quantity.intValue.toString()) }
         val unitaryValue = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
         // It stores the unitary value show the text field
@@ -141,9 +140,7 @@ fun SaleInput(
                     },
                     supportingText = {
                         if (quantity.intValue == ZERO_INT) {
-                            Text(text = stringResource(id = R.string.bigger_than_zero_int_message))
-                        } else if (quantity.intValue > QUANTITY_MAX_ALLOWED) {
-                            Text(text = stringResource(id = R.string.smaller_than_one_hundred_message))
+                            Text(text = stringResource(id = R.string.bigger_than_zero_and_smaller_than_one_hundred_message))
                         }
                     },
                     isError = quantity.intValue == ZERO_INT,
@@ -184,9 +181,7 @@ fun SaleInput(
                     ),
                     supportingText = {
                         if (unitaryValue.doubleValue == ZERO_DOUBLE) {
-                            Text(text = stringResource(id = R.string.bigger_than_zero_double_message))
-                        } else if (unitaryValue.doubleValue > UNITARY_VALUE_MAX_ALLOWED) {
-                            Text(text = stringResource(id = R.string.smaller_than_fifty_thousand_message))
+                            Text(text = stringResource(id = R.string.bigger_than_zero_and_smaller_than_fifty_thousand_message))
                         }
                     },
                     isError = unitaryValue.doubleValue == ZERO_DOUBLE,
@@ -295,5 +290,5 @@ private fun clearFields(
 @Preview
 @Composable
 fun SaleInputPreview() {
-    SaleInput(modifier = Modifier, { _, _, _, _, _ -> }, {_ ->})
+    SaleInput(modifier = Modifier, { _, _, _, _, _ -> }, { _ -> })
 }

@@ -96,7 +96,7 @@ fun AddSaleScreenContent(
                                 saleItemDeferreds.awaitAll() // Wait for all SaleItem insertions to complete
                                 snackbarHostState.showSnackbar(
                                     message = context.getString(R.string.sales_added),
-                                    duration = SnackbarDuration.Long
+                                    duration = SnackbarDuration.Short
                                 )
                                 navigateToMainScreen()
                             } catch (e: Exception) {

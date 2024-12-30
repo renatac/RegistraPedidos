@@ -22,7 +22,7 @@ import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
 
 @Composable
 fun ViewSaleItem(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     saleItem: SaleItem,
     onDeleteButtonClicked: (SaleItem) -> Unit
 ) {

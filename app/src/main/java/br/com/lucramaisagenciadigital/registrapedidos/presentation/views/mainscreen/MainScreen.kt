@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,8 +63,7 @@ fun MainScreenContent(
     ) {
         Text(
             text = stringResource(id = R.string.registry_requests, 0.toString()),
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
+            style = typography.titleLarge,
             textAlign = TextAlign.Center,
             color = Color.Black,
             modifier = modifier
@@ -76,7 +77,6 @@ fun MainScreenContent(
             painter = painterResource(id = R.drawable.ic_app_registration_24),
             contentDescription = stringResource(id = R.string.content_description_app_registration_image),
         )
-        // TODO("Trocar o zero pelo valor total de verdade")
         Text(
             text = stringResource(id = R.string.slogan_phase_subtitle, 0.toString()),
             fontSize = 24.sp,
@@ -94,7 +94,8 @@ fun MainScreenContent(
                 .padding(top = 48.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
             onClick = {
                 navController.navigate(ScreenRoutes.ADD_SALE_ROUTE.name)
-            }) {
+            }
+        ) {
             Text(
                 text = stringResource(id = R.string.doing_sale),
                 fontSize = 24.sp,

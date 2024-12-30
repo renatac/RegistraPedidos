@@ -70,8 +70,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    //annotationProcessor(libs.room.compiler)
-    //implementation(libs.squareup.retrofit.converter.gson)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)

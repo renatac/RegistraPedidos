@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,10 +19,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +44,11 @@ fun ViewSales(
 ) {
     val discountNumber = remember { mutableStateOf(String()) }
 
-    Column(Modifier.background(Color.Yellow)) {
+    Column(
+        Modifier
+            .background(Color.LightGray)
+            .fillMaxHeight()
+    ) {
         Box(
             Modifier
                 .background(DarkBlue)
@@ -106,16 +109,13 @@ fun ViewSales(
             }
         } else {
             Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .background(Color.LightGray)
+                modifier = modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     modifier = modifier
-                        .size(100.dp)
-                        .padding(top = 24.dp)
-                        .align(Alignment.CenterHorizontally),
+                        .size(100.dp),
                     painter = painterResource(id = R.drawable.ic_app_registration_24),
                     contentDescription = stringResource(id = R.string.content_description_app_registration_image),
                 )
@@ -137,7 +137,6 @@ fun ViewSales(
 @Preview
 @Composable
 fun ViewSalesPreview() {
-    // TODO ("Removing mock")
     val saleItems = listOf(
         SaleItem(
             1,
@@ -156,5 +155,8 @@ fun ViewSalesPreview() {
             totalValue = 2100.00
         )
     )
-    ViewSales(saleItemsList = saleItems, onDeleteButtonClicked= {_ ->}, onCalculateDiscount = {_ ->})
+    ViewSales(
+        saleItemsList = saleItems,
+        onDeleteButtonClicked = { _ -> },
+        onCalculateDiscount = { _ -> })
 }

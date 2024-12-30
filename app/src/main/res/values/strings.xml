@@ -34,4 +34,7 @@
     <string name="client">Cliente: %s</string>
     <string name="deleting_all_sales">Excluir todas as vendas</string>
     <string name="sales_saved">Vendas salvas com sucesso!</string>
+    <string name="error_adding_sales">Erro ao salvar vendas: %s</string>
+    <string name="error_calculating_discount">Erro ao calcular desconto: %s</string>
+    <string name="unknown_error">Erro desconhecido.</string>
 </resources>

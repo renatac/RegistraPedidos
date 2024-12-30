@@ -1,17 +1,20 @@
 package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +28,7 @@ import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.Use
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components.Buttons
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components.SaleInput
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components.ViewSales
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -37,13 +41,13 @@ fun AddSaleScreen(
     navigateToMainScreen: () -> Unit
 ) {
 
-    val allUsersData: List<UserData>? = viewModel.allUsersDataStateFlow.collectAsState().value
-    val userData: UserData? = viewModel.userDataStateFlow.collectAsState().value
+    //val allUsersData: List<UserData>? = viewModel.allUsersDataStateFlow.collectAsState().value
+    //val userData: UserData? = viewModel.userDataStateFlow.collectAsState().value
 
-    val allUsersDataOrderByRequestNumber: List<UserData?> by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
-        initial = listOf<UserData>()
-    )
-    println(allUsersDataOrderByRequestNumber)
+    // val allUsersDataOrderByRequestNumber: List<UserData?> by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
+    //   initial = listOf<UserData>()
+    // )
+    // println(allUsersDataOrderByRequestNumber)
 
     // saleItemMutableStateList.addAll(userData?.saleItemList.orEmpty())
     AddSaleScreenContent(modifier, viewModel, navigateToMainScreen)
@@ -56,9 +60,11 @@ fun AddSaleScreenContent(
     navigateToMainScreen: () -> Unit
 ) {
     val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
-    var clientName = String()
+    var clientName by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         topBar = {
             RegisterOrdersTopAppBar(
@@ -76,67 +82,91 @@ fun AddSaleScreenContent(
                     },
                     onSaveButtonClicked = {
                         coroutineScope.launch {
-                            val userDataId = viewModel.insertUserData(UserData(name = clientName))
+                            try {
+                                val userDataId =
+                                    viewModel.insertUserData(UserData(name = clientName))
 
-                            //Inserting SaleItems for the UserData only after the UserData is inserted
-                            val saleItemDeferreds = saleItemMutableStateList.map { saleItem ->
-                                val updatedSaleItem = saleItem.copy(userDataId = userDataId)
-                                async { viewModel.insertSaleItem(updatedSaleItem) }
+                                //Inserting SaleItems for the UserData only after the UserData is inserted
+                                val saleItemDeferreds: List<Deferred<Long>> =
+                                    saleItemMutableStateList.map { saleItem: SaleItem ->
+                                        val updatedSaleItem = saleItem.copy(userDataId = userDataId)
+                                        async { viewModel.insertSaleItem(updatedSaleItem) }
+                                    }
+
+                                saleItemDeferreds.awaitAll() // Wait for all SaleItem insertions to complete
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.sales_added),
+                                    duration = SnackbarDuration.Long
+                                )
+                                navigateToMainScreen()
+                            } catch (e: Exception) {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(
+                                        R.string.error_adding_sales,
+                                        e.message ?: R.string.unknown_error
+                                    ),
+                                    duration = SnackbarDuration.Long
+                                )
                             }
-
-                            saleItemDeferreds.awaitAll() // Wait for all SaleItem insertions to complete
                         }
-                        Toast.makeText(context, context.getString(R.string.sales_added), Toast.LENGTH_SHORT).show()
-                        navigateToMainScreen()
                     }
                 )
             }
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
             Column(
                 modifier
                     .padding(contentPadding)
                     .background(Color.Yellow)
+                    .fillMaxSize()
             ) {
-                SaleInput(modifier) { product, quantity, unitaryValue, totalValue, name ->
-                    clientName = name
-                    val saleItem = SaleItem(
-                        userDataId = viewModel.userDataId,
-                        product = product,
-                        quantity = quantity,
-                        unitaryValue = unitaryValue,
-                        totalValue = totalValue
-                    )
-                    saleItemMutableStateList.add(saleItem)
-                }
-                ViewSales(
+                SaleInput(
                     modifier,
+                    onAddButtonClicked = { product, quantity, unitaryValue, totalValue, name ->
+                        clientName = name
+                        val saleItem = SaleItem(
+                            userDataId = viewModel.userDataId,
+                            product = product,
+                            quantity = quantity,
+                            unitaryValue = unitaryValue,
+                            totalValue = totalValue
+                        )
+                        saleItemMutableStateList.add(saleItem)
+                    },
+                    showSnackbar = { message: String ->
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = message,
+                                duration = SnackbarDuration.Long
+                            )
+                        }
+                    }
+                )
+                ViewSales(
                     saleItemsList = saleItemMutableStateList,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
                         saleItemMutableStateList.remove(saleItem)
                     },
                     onCalculateDiscount = { discount ->
-                        calculateDiscount(discount, saleItemMutableStateList)
+                        coroutineScope.launch {
+                            try {
+                                viewModel.calculateDiscount(discount, saleItemMutableStateList)
+                            } catch (e: Exception) {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(
+                                        R.string.error_calculating_discount,
+                                        e.message ?: R.string.unknown_error
+                                    ),
+                                    duration = SnackbarDuration.Long
+                                )
+                            }
+                        }
                     }
                 )
             }
         }
     )
-}
-
-fun calculateDiscount(
-    discountNumber: Double,
-    saleItemMutableStateList: SnapshotStateList<SaleItem>
-) {
-    val total = saleItemMutableStateList.sumOf { it.totalValue }
-    val saleList = mutableListOf<SaleItem>()
-
-    saleItemMutableStateList.forEach {
-        saleList.add(it.copy(totalValue = it.totalValue -
-                (discountNumber * (it.totalValue / total))))
-    }
-    saleItemMutableStateList.clear()
-    saleItemMutableStateList.addAll(saleList)
 }
 
 @Preview

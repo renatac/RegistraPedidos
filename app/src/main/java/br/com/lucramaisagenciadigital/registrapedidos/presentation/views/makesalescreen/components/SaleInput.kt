@@ -1,6 +1,5 @@
 package br.com.lucramaisagenciadigital.registrapedidos.presentation.views.makesalescreen.components
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableDoubleState
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +44,8 @@ private const val QUANTITY_MAX_ALLOWED = 100
 @Composable
 fun SaleInput(
     modifier: Modifier,
-    onAddButtonClicked: (String, Int, Double, Double, String) -> Unit
+    onAddButtonClicked: (String, Int, Double, Double, String) -> Unit,
+    showSnackbar: (String) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -57,7 +59,12 @@ fun SaleInput(
         val clientName = remember { mutableStateOf(String()) }
         val productName = remember { mutableStateOf(String()) }
         val quantity: MutableIntState = remember { mutableIntStateOf(ZERO_INT) }
+        // It stores the quantity value show the text field
+
+        var quantityText by remember { mutableStateOf(quantity.intValue.toString()) }
         val unitaryValue = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
+        // It stores the unitary value show the text field
+        var unitaryValueText by remember { mutableStateOf(unitaryValue.doubleValue.toString()) }
         val totalQuantity = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
         totalQuantity.doubleValue = quantity.intValue * unitaryValue.doubleValue
 
@@ -105,21 +112,25 @@ fun SaleInput(
                 modifier.fillMaxWidth()
             ) {
                 TextField(
-                    value = if (quantity.intValue == ZERO_INT) {
-                        String()
-                    } else {
-                        quantity.intValue.toString()
-                    },
-                    singleLine = true,
-                    onValueChange = {
-                        if (quantity.intValue <= QUANTITY_MAX_ALLOWED) {
-                            if (it.isEmpty() || it.isBlank()) {
-                                quantity.intValue = ZERO_INT
-                            } else {
-                                quantity.intValue = it.toInt()
+                    value = quantityText,
+                    onValueChange = { newText ->
+                        if (newText.isEmpty() || newText.isBlank()) {
+                            quantity.intValue = ZERO_INT
+                            quantityText = ""
+                        } else {
+                            val newQuantity = newText.toIntOrNull()
+                            if (newQuantity != null) {
+                                if (newQuantity <= QUANTITY_MAX_ALLOWED) {
+                                    quantity.intValue = newQuantity
+                                    quantityText = newText
+                                } else {
+                                    // If the new quantity exceeds the limit, only updates the text to the previous value
+                                    quantityText = quantity.intValue.toString()
+                                }
                             }
                         }
                     },
+                    singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
@@ -142,21 +153,25 @@ fun SaleInput(
                         .weight(1F)
                 )
                 TextField(
-                    value = if (unitaryValue.doubleValue == ZERO_DOUBLE) {
-                        String()
-                    } else {
-                        unitaryValue.doubleValue.toString()
-                    },
-                    singleLine = true,
-                    onValueChange = {
-                        if (unitaryValue.doubleValue <= UNITARY_VALUE_MAX_ALLOWED) {
-                            if (it.isEmpty() || it.isBlank()) {
-                                unitaryValue.doubleValue = ZERO_DOUBLE
-                            } else {
-                                unitaryValue.doubleValue = it.toDouble()
+                    value = unitaryValueText,
+                    onValueChange = { newText ->
+                        if (newText.isEmpty() || newText.isBlank()) {
+                            unitaryValue.doubleValue = ZERO_DOUBLE
+                            unitaryValueText = ""
+                        } else {
+                            val newUnitaryValue = newText.toDoubleOrNull()
+                            if (newUnitaryValue != null) {
+                                if (newUnitaryValue <= UNITARY_VALUE_MAX_ALLOWED) {
+                                    unitaryValue.doubleValue = newUnitaryValue
+                                    unitaryValueText = newText
+                                } else {
+                                    // If the new unitaryValue exceeds the limit, only updates the text to the previous value
+                                    unitaryValueText = unitaryValue.doubleValue.toString()
+                                }
                             }
                         }
                     },
+                    singleLine = true,
                     placeholder = {
                         Text(
                             text = stringResource(
@@ -241,7 +256,7 @@ fun SaleInput(
                             totalQuantity
                         )
                     } else {
-                        Toast.makeText(context, emptyFieldsString, Toast.LENGTH_LONG).show()
+                        showSnackbar.invoke(emptyFieldsString)
                     }
                 }
             ) {
@@ -272,13 +287,13 @@ private fun clearFields(
     totalQuantity: MutableDoubleState
 ) {
     productName.value = String()
-    quantity.intValue = 0
-    unitValue.doubleValue = 0.0
-    totalQuantity.doubleValue = 0.0
+    quantity.intValue = ZERO_INT
+    unitValue.doubleValue = ZERO_DOUBLE
+    totalQuantity.doubleValue = ZERO_DOUBLE
 }
 
 @Preview
 @Composable
 fun SaleInputPreview() {
-    SaleInput(modifier = Modifier) { _, _, _, _, _-> }
+    SaleInput(modifier = Modifier, { _, _, _, _, _ -> }, {_ ->})
 }

@@ -15,8 +15,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableDoubleState
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -27,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,14 +56,19 @@ fun SaleInput(
     ) {
         val clientName = remember { mutableStateOf(String()) }
         val productName = remember { mutableStateOf(String()) }
-        val quantity: MutableIntState = remember { mutableIntStateOf(ZERO_INT) }
+        val quantity = remember { mutableIntStateOf(ZERO_INT) }
         // It stores the quantity value show the text field
-        var quantityText by remember { mutableStateOf(quantity.intValue.toString()) }
+        val quantityText = remember { mutableStateOf(String()) }
         val unitaryValue = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
         // It stores the unitary value show the text field
-        var unitaryValueText by remember { mutableStateOf(unitaryValue.doubleValue.toString()) }
+        val unitaryValueText = remember { mutableStateOf(String()) }
         val totalQuantity = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
-        totalQuantity.doubleValue = quantity.intValue * unitaryValue.doubleValue
+        var onAddButtonClicked by remember { mutableStateOf(false) }
+
+        if(onAddButtonClicked) {
+            HideKeyboard()
+            onAddButtonClicked = false
+        }
 
         Column(
             modifier = Modifier
@@ -110,23 +114,24 @@ fun SaleInput(
                 modifier.fillMaxWidth()
             ) {
                 TextField(
-                    value = quantityText,
+                    value = quantityText.value,
                     onValueChange = { newText ->
                         if (newText.isEmpty() || newText.isBlank()) {
                             quantity.intValue = ZERO_INT
-                            quantityText = ""
+                            quantityText.value = String()
                         } else {
                             val newQuantity = newText.toIntOrNull()
                             if (newQuantity != null) {
                                 if (newQuantity <= QUANTITY_MAX_ALLOWED) {
                                     quantity.intValue = newQuantity
-                                    quantityText = newText
+                                    quantityText.value = newText
                                 } else {
                                     // If the new quantity exceeds the limit, only updates the text to the previous value
-                                    quantityText = quantity.intValue.toString()
+                                    quantityText.value = quantity.intValue.toString()
                                 }
                             }
                         }
+                        setupTotalValue(totalQuantity, quantityText, unitaryValueText)
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -149,23 +154,24 @@ fun SaleInput(
                         .weight(1F)
                 )
                 TextField(
-                    value = unitaryValueText,
+                    value = unitaryValueText.value,
                     onValueChange = { newText ->
                         if (newText.isEmpty() || newText.isBlank()) {
                             unitaryValue.doubleValue = ZERO_DOUBLE
-                            unitaryValueText = ""
+                            unitaryValueText.value = String()
                         } else {
                             val newUnitaryValue = newText.toDoubleOrNull()
                             if (newUnitaryValue != null) {
                                 if (newUnitaryValue <= UNITARY_VALUE_MAX_ALLOWED) {
                                     unitaryValue.doubleValue = newUnitaryValue
-                                    unitaryValueText = newText
+                                    unitaryValueText.value = newText
                                 } else {
                                     // If the new unitaryValue exceeds the limit, only updates the text to the previous value
-                                    unitaryValueText = unitaryValue.doubleValue.toString()
+                                    unitaryValueText.value = unitaryValue.doubleValue.toString()
                                 }
                             }
                         }
+                        setupTotalValue(totalQuantity, quantityText, unitaryValueText)
                     },
                     singleLine = true,
                     placeholder = {
@@ -215,10 +221,10 @@ fun SaleInput(
                 onClick = {
                     clearFields(
                         productName,
-                        quantity,
-                        unitaryValue,
-                        totalQuantity
+                        quantityText,
+                        unitaryValueText
                     )
+                    onAddButtonClicked = true
                 }) {
                 Text(text = stringResource(id = R.string.cleaning))
             }
@@ -227,6 +233,7 @@ fun SaleInput(
                 .padding(start = 8.dp, end = 16.dp, bottom = 16.dp)
                 .weight(1F),
                 onClick = {
+                    onAddButtonClicked = true
                     if (isFieldsNotEmpties(
                             clientName.value,
                             productName.value,
@@ -244,9 +251,8 @@ fun SaleInput(
                         )
                         clearFields(
                             productName,
-                            quantity,
-                            unitaryValue,
-                            totalQuantity
+                            quantityText,
+                            unitaryValueText,
                         )
                     } else {
                         showSnackbar.invoke(emptyFieldsString)
@@ -259,6 +265,31 @@ fun SaleInput(
     }
 }
 
+private fun setupTotalValue(
+    totalQuantity: MutableState<Double>,
+    quantityText: MutableState<String>,
+    unitaryValueText: MutableState<String>
+) {
+    totalQuantity.value =
+        if (isUnfilled(quantityText.value) || isUnfilled(unitaryValueText.value)) {
+            ZERO_DOUBLE
+        } else {
+            quantityText.value.toInt() * unitaryValueText.value.toDouble()
+        }
+}
+
+private fun isUnfilled(text: String) =
+    text.isEmpty() || text.isBlank()
+
+@Composable
+fun HideKeyboard() {
+    val focusManager = LocalFocusManager.current
+    focusManager.clearFocus()
+}
+
+private fun isNotFilled(text: String) =
+    text.isNotEmpty() && text.isNotBlank()
+
 private fun isFieldsNotEmpties(
     name: String,
     product: String,
@@ -266,8 +297,7 @@ private fun isFieldsNotEmpties(
     unitaryValue: Double,
     totalValue: Double
 ): Boolean {
-    return (name.isNotEmpty() && name.isNotBlank()) &&
-            (product.isNotEmpty() && product.isNotBlank()) &&
+    return (isNotFilled(name) && isNotFilled(product)) &&
             quantity != ZERO_INT &&
             unitaryValue != ZERO_DOUBLE &&
             totalValue != ZERO_DOUBLE
@@ -275,14 +305,12 @@ private fun isFieldsNotEmpties(
 
 private fun clearFields(
     productName: MutableState<String>,
-    quantity: MutableIntState,
-    unitValue: MutableDoubleState,
-    totalQuantity: MutableDoubleState
+    quantityText: MutableState<String>,
+    unitValueText: MutableState<String>
 ) {
     productName.value = String()
-    quantity.intValue = ZERO_INT
-    unitValue.doubleValue = ZERO_DOUBLE
-    totalQuantity.doubleValue = ZERO_DOUBLE
+    quantityText.value = String()
+    unitValueText.value = String()
 }
 
 @Preview

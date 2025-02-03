@@ -12,7 +12,7 @@ class SaleItemTest {
         assertEquals(1L, newSaleItem.userDataId)
         assertEquals("Product 1", newSaleItem.product)
         assertEquals(10, newSaleItem.quantity)
-        assertEquals(2.0, newSaleItem.unitaryValue, 0.001)
-        assertEquals(20.0, newSaleItem.totalValue, 0.001)
+        assertEquals(2.0, newSaleItem.unitaryValue, 0.0)
+        assertEquals(20.0, newSaleItem.totalValue, 0.0)
     }
 }

@@ -93,4 +93,6 @@ dependencies {
     testImplementation(libs.androidx.room)
     testImplementation(libs.androidx.test)
     testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
 }

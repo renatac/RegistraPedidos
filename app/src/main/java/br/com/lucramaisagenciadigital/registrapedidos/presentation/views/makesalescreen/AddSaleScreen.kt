@@ -133,51 +133,32 @@ fun AddSaleScreenContent(
                     }
                 )
                 val discountEmptyMessage = stringResource(id = R.string.discount_please)
+                val discountBiggerWrongMessage = stringResource(id = R.string.discount_bigger_than_total_value)
                 ViewSales(
                     saleItemsList = saleItemMutableStateList,
                     clientNameMutableState = clientName,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
                         saleItemMutableStateList.remove(saleItem)
                     },
-                    onAddDiscount = { discount ->
+                    onCalculateDiscount = { discount, totalValue, isAddingDiscount ->
                         coroutineScope.launch {
                             if (discount.isEmpty()) {
                                 snackbarHostState.showSnackbar(
                                     message = discountEmptyMessage,
                                     duration = SnackbarDuration.Short
                                 )
-                            } else {
-                                try {
-                                    viewModel.adjustDiscount(
-                                        discount.toDouble(),
-                                        saleItemMutableStateList,
-                                        true
-                                    )
-                                } catch (e: Exception) {
-                                    snackbarHostState.showSnackbar(
-                                        message = context.getString(
-                                            R.string.error_calculating_discount,
-                                            e.message ?: R.string.unknown_error
-                                        ),
-                                        duration = SnackbarDuration.Long
-                                    )
-                                }
+                            } else if(discount.toDouble() >= totalValue && isAddingDiscount) {
+                                snackbarHostState.showSnackbar(
+                                    message = discountBiggerWrongMessage,
+                                    duration = SnackbarDuration.Short
+                                )
                             }
-                        }
-                    },
-                    onRemoveDiscount = { discount ->
-                        coroutineScope.launch {
-                            if (discount.isEmpty()) {
-                                snackbarHostState.showSnackbar(
-                                    message = discountEmptyMessage,
-                                    duration = SnackbarDuration.Short
-                                )
-                            } else {
+                            else {
                                 try {
                                     viewModel.adjustDiscount(
                                         discount.toDouble(),
                                         saleItemMutableStateList,
-                                        false
+                                        isAddingDiscount
                                     )
                                 } catch (e: Exception) {
                                     snackbarHostState.showSnackbar(

@@ -45,8 +45,7 @@ fun ViewSales(
     clientNameMutableState: MutableState<String>? = null,
     saleItemsList: List<SaleItem>? = emptyList(),
     onDeleteButtonClicked: (SaleItem) -> Unit,
-    onAddDiscount: (String) -> Unit,
-    onRemoveDiscount: (String) -> Unit
+    onCalculateDiscount: (String, Double, Boolean) -> Unit,
 ) {
     val discountNumber = remember { mutableStateOf(String()) }
 
@@ -87,6 +86,7 @@ fun ViewSales(
                     defaultElevation = 8.dp
                 )
             ) {
+                val totalValue = saleItemsList.sumOf { it.totalValue }
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -105,7 +105,8 @@ fun ViewSales(
                             value = discountNumber.value,
                             onValueChange = { discountNumber.value = it },
                             singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),                            placeholder = { Text(text = stringResource(id = R.string.discount)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            placeholder = { Text(text = stringResource(id = R.string.discount)) },
                             modifier = Modifier
                                 .padding(start = 16.dp, end = 16.dp, top = 4.dp)
                                 .fillMaxWidth()
@@ -115,7 +116,7 @@ fun ViewSales(
                                 .padding(start = 16.dp, end = 8.dp, bottom = 16.dp)
                                 .weight(1F),
                                 onClick = {
-                                    onAddDiscount(discountNumber.value)
+                                    onCalculateDiscount(discountNumber.value, totalValue, true)
                                 }) {
                                 Text(text = stringResource(id = R.string.apply_discount))
                             }
@@ -123,7 +124,7 @@ fun ViewSales(
                                 .padding(end = 16.dp, bottom = 16.dp)
                                 .weight(1F),
                                 onClick = {
-                                    onRemoveDiscount(discountNumber.value)
+                                    onCalculateDiscount(discountNumber.value, totalValue, false)
                                 }) {
                                 Text(text = stringResource(id = R.string.remove_discount))
                             }
@@ -191,7 +192,6 @@ fun ViewSalesPreview() {
     ViewSales(
         saleItemsList = saleItems,
         onDeleteButtonClicked = { _ -> },
-        onAddDiscount = { _ -> },
-        onRemoveDiscount = { _ -> }
+        onCalculateDiscount = { _, _, _ -> }
     )
 }

@@ -9,7 +9,8 @@
     <string name="client_name">Nome do cliente</string>
     <string name="product_name">Nome do produto</string>
     <string name="discount">Desconto</string>
-    <string name="discount_please">Por favor, Preencha o valor do desconto.</string>
+    <string name="discount_please">Por favor, preencha o valor do desconto.</string>
+    <string name="discount_bigger_than_total_value">O desconto não pode ser maior ou igual ao valor total.</string>
     <string name="total_value"><b>Valor total</b>: %s</string>
     <string name="adding">Adicionar</string>
     <string name="cleaning">Limpar</string>

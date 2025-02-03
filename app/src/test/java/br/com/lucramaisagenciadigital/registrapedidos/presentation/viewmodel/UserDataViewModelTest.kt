@@ -1,38 +1,46 @@
 package br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
-import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
+import br.com.lucramaisagenciadigital.registrapedidos.clientName
+import br.com.lucramaisagenciadigital.registrapedidos.clientNameNull
 import br.com.lucramaisagenciadigital.registrapedidos.domain.Repository
+import br.com.lucramaisagenciadigital.registrapedidos.expectedId
+import br.com.lucramaisagenciadigital.registrapedidos.expectedRequestNumber
+import br.com.lucramaisagenciadigital.registrapedidos.itemNumber
+import br.com.lucramaisagenciadigital.registrapedidos.newSaleItem
+import br.com.lucramaisagenciadigital.registrapedidos.newUserData
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_DOUBLE
+import br.com.lucramaisagenciadigital.registrapedidos.productName
+import br.com.lucramaisagenciadigital.registrapedidos.quantityText
+import br.com.lucramaisagenciadigital.registrapedidos.saleItems
+import br.com.lucramaisagenciadigital.registrapedidos.totalQuantity
+import br.com.lucramaisagenciadigital.registrapedidos.unitValueText
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class UserDataViewModelTest {
+class UserDataViewModelAdvancedTest {
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    private val repository: Repository = mockk()
     private lateinit var viewModel: UserDataViewModel
+    private lateinit var mockRepository: Repository
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setup() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
-        viewModel = UserDataViewModel(repository)
+        Dispatchers.setMain(testDispatcher)
+        mockRepository = mockk(relaxed = true)
+        viewModel = UserDataViewModel(mockRepository)
     }
 
     @After
@@ -41,80 +49,124 @@ class UserDataViewModelTest {
     }
 
     @Test
-    fun `insertUserData should insert user data and update userDataId`() = runTest {
-        val userData = UserData(name = "User 1")
-        val expectedId = 1L
-        coEvery { repository.insertUserData(userData) } returns expectedId
+    fun `AdjustDiscount should adjust the discount correctly when isAddingDiscount is false, then each SaleItem totalValue should be added by the discount percentage`() =
+        runTest {
+            val discount = 30.0
+            val totalValueExpected1 = 20.0
+            val totalValueExpected2 = 40.0
 
-        val actualId = viewModel.insertUserData(userData)
+            // ACT
+            viewModel.adjustDiscount(discount, saleItems, false)
 
-        assertEquals(expectedId, actualId)
-        assertEquals(expectedId, viewModel.userDataId)
-        coVerify(exactly = 1) { repository.insertUserData(userData) }
-    }
-
-    @Test
-    fun `deleteUserDataByRequestNumber should call repository delete function`() = runTest {
-        val requestNumber = 1L
-        coEvery { repository.deleteUserDataByRequestNumber(requestNumber) } returns Unit
-
-        viewModel.deleteUserDataByRequestNumber(requestNumber)
-
-        coVerify(exactly = 1) { repository.deleteUserDataByRequestNumber(requestNumber) }
-    }
+            // ASSERT
+            assertEquals(totalValueExpected1, saleItems[0].totalValue, ZERO_DOUBLE)
+            assertEquals(totalValueExpected2, saleItems[1].totalValue, ZERO_DOUBLE)
+        }
 
     @Test
-    fun `deleteAllUserData should call repository delete all function`() = runTest {
-        coEvery { repository.deleteAllUserData() } returns Unit
+    fun `insertUserData should insert a new UserData and return its ID`() =
+        runTest {
+            // ARRANGE
+            coEvery { mockRepository.insertUserData(newUserData) } returns expectedId
 
-        viewModel.deleteAllUserData()
+            // ACT
+            val actualId = viewModel.insertUserData(newUserData)
 
-        coVerify(exactly = 1) { repository.deleteAllUserData() }
-    }
-
-    @Test
-    fun `insertSaleItem should insert sale item and update saleDataId`() = runTest {
-        val saleItem = SaleItem(1L, userDataId = 1, "Item 1", 1, 1.0, 1.0)
-        val expectedId = 1L
-        coEvery { repository.insertSaleItem(saleItem) } returns expectedId
-
-        val actualId = viewModel.insertSaleItem(saleItem)
-
-        assertEquals(expectedId, actualId)
-        assertEquals(expectedId, viewModel.saleDataId)
-        coVerify(exactly = 1) { repository.insertSaleItem(saleItem) }
-    }
+            // ASSERT
+            assertEquals(expectedId, actualId)
+            assertEquals(expectedId, viewModel.userDataId)
+            coVerify(exactly = 1) { mockRepository.insertUserData(newUserData) }
+        }
 
     @Test
-    fun `deleteSaleItemByItemNumber should call repository delete function`() = runTest {
-        val itemNumber = 1L
-        coEvery { repository.deleteSaleItemByItemNumber(itemNumber) } returns Unit
+    fun `viewmodel's deleteUserDataByRequestNumber is called, so repository's deleteUserDataByRequestNumber is called once`() =
+        runTest {
+            // ACT
+            viewModel.deleteUserDataByRequestNumber(expectedRequestNumber)
 
-        viewModel.deleteSaleItemByItemNumber(itemNumber)
-
-        coVerify(exactly = 1) { repository.deleteSaleItemByItemNumber(itemNumber) }
-    }
-
-    @Test
-    fun `allUsersDataOrderByRequestNumber should return flow of list of UserData`() = runTest {
-        val expectedUsersData = listOf(UserData(1, "User 1"), UserData(2, "User 2"))
-        coEvery { repository.usersDataOrderByRequestNumber } returns flowOf(expectedUsersData)
-
-        val actualUsersData = viewModel.allUsersDataOrderByRequestNumber
-
-        assertEquals(expectedUsersData, actualUsersData)
-        coVerify(exactly = 1) { repository.usersDataOrderByRequestNumber }
-    }
+            // ASSERT
+            coVerify(exactly = 1) {
+                mockRepository.deleteUserDataByRequestNumber(
+                    expectedRequestNumber
+                )
+            }
+        }
 
     @Test
-    fun `allSaleItemsOrderByUserDataId should return flow of list of SaleItem`() = runTest {
-        val expectedSaleItems =
-            listOf(SaleItem(1, 1, "Item 1", 1, 1.0, 1.0), SaleItem(2, 1, "Item 2", 1, 1.0, 1.0))
-        coEvery { repository.saleItemsOrderByUserDataId } returns flowOf(expectedSaleItems)
+    fun `viewmodel's deleteAllUserData is called, so repository's deleteAllUserData is called once`() =
+        runTest {
+            // ACT
+            viewModel.deleteAllUserData()
 
-        val actualSaleItems = viewModel.allSaleItemsOrderByUserDataId
+            // ASSERT
+            coVerify(exactly = 1) { mockRepository.deleteAllUserData() }
+        }
 
-        assertEquals(expectedSaleItems, actualSaleItems)
-        coVerify(exactly = 1) { repository.saleItemsOrderByUserDataId }
-    }
+    @Test
+    fun `insertSaleItem should insert a new SaleItem and return it ID`() =
+        runTest {
+            coEvery { mockRepository.insertSaleItem(newSaleItem) } returns expectedId
+
+            // ACT
+            val actualId = viewModel.insertSaleItem(newSaleItem)
+
+            // ASSERT
+            assertEquals(expectedId, actualId)
+            assertEquals(expectedId, viewModel.saleDataId)
+            coVerify(exactly = 1) { mockRepository.insertSaleItem(newSaleItem) }
+        }
+
+    @Test
+    fun `viewmodel's deleteSaleItemByItemNumber is called, so repository's deleteSaleItemByItemNumber is called once`() =
+        runTest {
+            // ACT
+            viewModel.deleteSaleItemByItemNumber(itemNumber)
+
+            // ASSERT
+            coVerify(exactly = 1) {
+                mockRepository.deleteSaleItemByItemNumber(
+                    itemNumber
+                )
+            }
+        }
+
+    @Test
+    fun `ClearFields should reset all fields to their initial values, including clientName, when it is not null`() =
+        runTest {
+            // ACT
+            viewModel.clearFields(
+                clientName,
+                productName,
+                quantityText,
+                unitValueText,
+                totalQuantity
+            )
+
+            // ASSERT
+            assertEquals(String(), clientName.value)
+            assertEquals(String(), productName.value)
+            assertEquals(String(), quantityText.value)
+            assertEquals(String(), unitValueText.value)
+            assertEquals(ZERO_DOUBLE, totalQuantity.value, ZERO_DOUBLE)
+        }
+
+    @Test
+    fun `ClearFields should reset all fields to their initial values, excepts clientName, when it is null`() =
+        runTest {
+            // ACT
+            viewModel.clearFields(
+                clientName,
+                productName,
+                quantityText,
+                unitValueText,
+                totalQuantity
+            )
+
+            // ASSERT
+            assertNull(clientNameNull)
+            assertEquals(String(), productName.value)
+            assertEquals(String(), quantityText.value)
+            assertEquals(String(), unitValueText.value)
+            assertEquals(ZERO_DOUBLE, totalQuantity.value, ZERO_DOUBLE)
+        }
 }

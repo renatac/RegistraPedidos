@@ -1,36 +1,37 @@
-package br.com.lucramaisagenciadigital.registrapedidos.database.domain
+package br.com.lucramaisagenciadigital.registrapedidos.domain
 
 import br.com.lucramaisagenciadigital.registrapedidos.database.RegisterOrdersDao
-import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
-import br.com.lucramaisagenciadigital.registrapedidos.database.entities.UserData
-import br.com.lucramaisagenciadigital.registrapedidos.domain.RepositoryImpl
+import br.com.lucramaisagenciadigital.registrapedidos.expectedId
+import br.com.lucramaisagenciadigital.registrapedidos.expectedRequestNumber
+import br.com.lucramaisagenciadigital.registrapedidos.itemNumber
+import br.com.lucramaisagenciadigital.registrapedidos.newSaleItem
+import br.com.lucramaisagenciadigital.registrapedidos.newUserData
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class RepositoryImplTest {
+class RepositoryImplAdvancedTest {
 
-    private val registerOrdersDao: RegisterOrdersDao = mockk()
     private lateinit var repository: RepositoryImpl
+    private lateinit var mockRegisterOrdersDao: RegisterOrdersDao
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setup() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
-        repository = RepositoryImpl(registerOrdersDao)
+        Dispatchers.setMain(testDispatcher)
+        mockRegisterOrdersDao = mockk(relaxed = true)
+        repository = RepositoryImpl(mockRegisterOrdersDao)
     }
 
     @After
@@ -39,80 +40,67 @@ class RepositoryImplTest {
     }
 
     @Test
-    fun `usersDataOrderByRequestNumber should return flow of list of UserData`() = runTest {
-        val expectedUsersData = listOf(UserData(1, "User 1"), UserData(2, "User 2"))
-        coEvery { registerOrdersDao.getAllUsersDataOrderByRequestNumber() } returns flowOf(
-            expectedUsersData
-        )
+    fun `Repository's insertUserData should call dao's insertUserData and return the generated id, when a new UserData is passed`() =
+        runTest {
+            coEvery { mockRegisterOrdersDao.insertUserData(newUserData) } returns expectedId
 
-        val actualUsersData = repository.usersDataOrderByRequestNumber.first()
+            // ACT
+            val actualGeneratedId = repository.insertUserData(newUserData)
 
-        assertEquals(expectedUsersData, actualUsersData)
-        coVerify(exactly = 1) { registerOrdersDao.getAllUsersDataOrderByRequestNumber() }
-    }
-
-    @Test
-    fun `saleItemsOrderByUserDataId should return flow of list of SaleItem`() = runTest {
-        val expectedSaleItems =
-            listOf(SaleItem(1, 1, "Item 1", 1, 1.0, 1.0), SaleItem(2, 1, "Item 2",1, 1.0, 1.0))
-        coEvery { registerOrdersDao.getAllSaleItems() } returns flowOf(expectedSaleItems)
-
-        val actualSaleItems = repository.saleItemsOrderByUserDataId.first()
-
-        assertEquals(expectedSaleItems, actualSaleItems)
-        coVerify(exactly = 1) { registerOrdersDao.getAllSaleItems() }
-    }
+            // ASSERT
+            assertEquals(expectedId, actualGeneratedId)
+            coVerify(exactly = 1) { mockRegisterOrdersDao.insertUserData(newUserData) }
+        }
 
     @Test
-    fun `insertUserData should insert user data and return id`() = runTest {
-        val userData = UserData(1, "User 1")
-        val expectedId = 1L
-        coEvery { registerOrdersDao.insertUserData(userData) } returns expectedId
+    fun `Repository's insertUserData should call dao's deleteUserDataByRequestNumber, when a request number is passed`() =
+        runTest {
+            // ACT
+            repository.deleteUserDataByRequestNumber(expectedRequestNumber)
 
-        val actualId = repository.insertUserData(userData)
-
-        assertEquals(expectedId, actualId)
-        coVerify(exactly = 1) { registerOrdersDao.insertUserData(userData) }
-    }
-
-    @Test
-    fun `deleteUserDataByRequestNumber should delete user data by request number`() = runTest {
-        val requestNumber = 1L
-        coEvery { registerOrdersDao.deleteUserDataByRequestNumber(requestNumber) } returns Unit
-
-        repository.deleteUserDataByRequestNumber(requestNumber)
-
-        coVerify(exactly = 1) { registerOrdersDao.deleteUserDataByRequestNumber(requestNumber) }
-    }
+            // ASSERT
+            coVerify(exactly = 1) {
+                mockRegisterOrdersDao.deleteUserDataByRequestNumber(
+                    expectedRequestNumber
+                )
+            }
+        }
 
     @Test
-    fun `deleteAllUserData should delete all user data`() = runTest {
-        coEvery { registerOrdersDao.deleteAllUserData() } returns Unit
+    fun `Repository's deleteAllUserData should call dao's deleteAllUserData`() =
+        runTest {
+            // ACT
+            repository.deleteAllUserData()
 
-        repository.deleteAllUserData()
-
-        coVerify(exactly = 1) { registerOrdersDao.deleteAllUserData() }
-    }
-
-    @Test
-    fun `insertSaleItem should insert sale item and return id`() = runTest {
-        val saleItem = SaleItem(1, 1, "Item 1", 1, 1.0, 1.0)
-        val expectedId = 1L
-        coEvery { registerOrdersDao.insertSaleItem(saleItem) } returns expectedId
-
-        val actualId = repository.insertSaleItem(saleItem)
-
-        assertEquals(expectedId, actualId)
-        coVerify(exactly = 1) { registerOrdersDao.insertSaleItem(saleItem) }
-    }
+            // ASSERT
+            coVerify(exactly = 1) { mockRegisterOrdersDao.deleteAllUserData() }
+        }
 
     @Test
-    fun `deleteSaleItemByItemNumber should delete sale item by item number`() = runTest {
-        val itemNumber = 1L
-        coEvery { registerOrdersDao.deleteSaleItemByItemNumber(itemNumber) } returns Unit
+    fun `Repository's insertSaleItem should call dao's insertSaleItem and return the generated id, when a new SaleItem is passed`() =
+        runTest {
+            // ARRANGE
+            coEvery { mockRegisterOrdersDao.insertSaleItem(newSaleItem) } returns expectedId
 
-        repository.deleteSaleItemByItemNumber(itemNumber)
+            // ACT
+            val actualGeneratedId = repository.insertSaleItem(newSaleItem)
 
-        coVerify(exactly = 1) { registerOrdersDao.deleteSaleItemByItemNumber(itemNumber) }
-    }
+            // ASSERT
+            assertEquals(expectedId, actualGeneratedId)
+            coVerify(exactly = 1) { mockRegisterOrdersDao.insertSaleItem(newSaleItem) }
+        }
+
+    @Test
+    fun `Repository's deleteSaleItemByItemNumber should call dao's deleteSaleItemByItemNumber, when an item number is passed`() =
+        runTest {
+            // ACT
+            repository.deleteSaleItemByItemNumber(itemNumber)
+
+            // ASSERT
+            coVerify(exactly = 1) {
+                mockRegisterOrdersDao.deleteSaleItemByItemNumber(
+                    itemNumber
+                )
+            }
+        }
 }

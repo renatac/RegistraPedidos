@@ -11,7 +11,7 @@ import br.com.lucramaisagenciadigital.registrapedidos.newUserData
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_DOUBLE
 import br.com.lucramaisagenciadigital.registrapedidos.productName
 import br.com.lucramaisagenciadigital.registrapedidos.quantityText
-import br.com.lucramaisagenciadigital.registrapedidos.saleItems
+import br.com.lucramaisagenciadigital.registrapedidos.expectedSaleItems
 import br.com.lucramaisagenciadigital.registrapedidos.totalQuantity
 import br.com.lucramaisagenciadigital.registrapedidos.unitValueText
 import io.mockk.coEvery
@@ -56,11 +56,11 @@ class UserDataViewModelAdvancedTest {
             val totalValueExpected2 = 40.0
 
             // ACT
-            viewModel.adjustDiscount(discount, saleItems, false)
+            viewModel.adjustDiscount(discount, expectedSaleItems, false)
 
             // ASSERT
-            assertEquals(totalValueExpected1, saleItems[0].totalValue, ZERO_DOUBLE)
-            assertEquals(totalValueExpected2, saleItems[1].totalValue, ZERO_DOUBLE)
+            assertEquals(totalValueExpected1, expectedSaleItems[0].totalValue, ZERO_DOUBLE)
+            assertEquals(totalValueExpected2, expectedSaleItems[1].totalValue, ZERO_DOUBLE)
         }
 
     @Test

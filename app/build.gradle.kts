@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.koin.compose)
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.core)
     ksp(libs.room.compiler)
     implementation(libs.gson)
 

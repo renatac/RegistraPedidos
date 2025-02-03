@@ -9,12 +9,10 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,16 +38,6 @@ fun AddSaleScreen(
     viewModel: UserDataViewModel,
     navigateToMainScreen: () -> Unit
 ) {
-
-    //val allUsersData: List<UserData>? = viewModel.allUsersDataStateFlow.collectAsState().value
-    //val userData: UserData? = viewModel.userDataStateFlow.collectAsState().value
-
-    // val allUsersDataOrderByRequestNumber: List<UserData?> by viewModel.allUsersDataOrderByRequestNumber.collectAsState(
-    //   initial = listOf<UserData>()
-    // )
-    // println(allUsersDataOrderByRequestNumber)
-
-    // saleItemMutableStateList.addAll(userData?.saleItemList.orEmpty())
     AddSaleScreenContent(modifier, viewModel, navigateToMainScreen)
 }
 
@@ -60,7 +48,7 @@ fun AddSaleScreenContent(
     navigateToMainScreen: () -> Unit
 ) {
     val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
-    var clientName by remember { mutableStateOf("") }
+    var clientName = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -84,7 +72,7 @@ fun AddSaleScreenContent(
                         coroutineScope.launch {
                             try {
                                 val userDataId =
-                                    viewModel.insertUserData(UserData(name = clientName))
+                                    viewModel.insertUserData(UserData(name = clientName.value))
 
                                 //Inserting SaleItems for the UserData only after the UserData is inserted
                                 val saleItemDeferreds: List<Deferred<Long>> =
@@ -123,8 +111,9 @@ fun AddSaleScreenContent(
             ) {
                 SaleInput(
                     modifier,
+                    viewModel,
                     onAddButtonClicked = { product, quantity, unitaryValue, totalValue, name ->
-                        clientName = name
+                        clientName.value = name
                         val saleItem = SaleItem(
                             userDataId = viewModel.userDataId,
                             product = product,
@@ -143,23 +132,62 @@ fun AddSaleScreenContent(
                         }
                     }
                 )
+                val discountEmptyMessage = stringResource(id = R.string.discount_please)
                 ViewSales(
                     saleItemsList = saleItemMutableStateList,
+                    clientNameMutableState = clientName,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
                         saleItemMutableStateList.remove(saleItem)
                     },
-                    onCalculateDiscount = { discount ->
+                    onAddDiscount = { discount ->
                         coroutineScope.launch {
-                            try {
-                                viewModel.calculateDiscount(discount, saleItemMutableStateList)
-                            } catch (e: Exception) {
+                            if (discount.isEmpty()) {
                                 snackbarHostState.showSnackbar(
-                                    message = context.getString(
-                                        R.string.error_calculating_discount,
-                                        e.message ?: R.string.unknown_error
-                                    ),
-                                    duration = SnackbarDuration.Long
+                                    message = discountEmptyMessage,
+                                    duration = SnackbarDuration.Short
                                 )
+                            } else {
+                                try {
+                                    viewModel.adjustDiscount(
+                                        discount.toDouble(),
+                                        saleItemMutableStateList,
+                                        true
+                                    )
+                                } catch (e: Exception) {
+                                    snackbarHostState.showSnackbar(
+                                        message = context.getString(
+                                            R.string.error_calculating_discount,
+                                            e.message ?: R.string.unknown_error
+                                        ),
+                                        duration = SnackbarDuration.Long
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    onRemoveDiscount = { discount ->
+                        coroutineScope.launch {
+                            if (discount.isEmpty()) {
+                                snackbarHostState.showSnackbar(
+                                    message = discountEmptyMessage,
+                                    duration = SnackbarDuration.Short
+                                )
+                            } else {
+                                try {
+                                    viewModel.adjustDiscount(
+                                        discount.toDouble(),
+                                        saleItemMutableStateList,
+                                        false
+                                    )
+                                } catch (e: Exception) {
+                                    snackbarHostState.showSnackbar(
+                                        message = context.getString(
+                                            R.string.error_calculating_discount,
+                                            e.message ?: R.string.unknown_error
+                                        ),
+                                        duration = SnackbarDuration.Long
+                                    )
+                                }
                             }
                         }
                     }

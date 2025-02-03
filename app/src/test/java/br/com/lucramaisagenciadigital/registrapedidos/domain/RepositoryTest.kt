@@ -76,29 +76,6 @@ class RepositoryImplTest {
     }
 
     @Test
-    fun `getUserDataByRequestNumber should return user data by request number`() = runTest {
-        val requestNumber = 1L
-        val expectedUserData = UserData(1, "User 1")
-        coEvery { registerOrdersDao.getUserDataByRequestNumber(requestNumber) } returns expectedUserData
-
-        val actualUserData = repository.getUserDataByRequestNumber(requestNumber)
-
-        assertEquals(expectedUserData, actualUserData)
-        coVerify(exactly = 1) { registerOrdersDao.getUserDataByRequestNumber(requestNumber) }
-    }
-
-    @Test
-    fun `getUserDataByRequestNumber should return null if user data not found`() = runTest {
-        val requestNumber = 1L
-        coEvery { registerOrdersDao.getUserDataByRequestNumber(requestNumber) } returns null
-
-        val actualUserData = repository.getUserDataByRequestNumber(requestNumber)
-
-        assertNull(actualUserData)
-        coVerify(exactly = 1) { registerOrdersDao.getUserDataByRequestNumber(requestNumber) }
-    }
-
-    @Test
     fun `deleteUserDataByRequestNumber should delete user data by request number`() = runTest {
         val requestNumber = 1L
         coEvery { registerOrdersDao.deleteUserDataByRequestNumber(requestNumber) } returns Unit

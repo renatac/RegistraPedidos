@@ -35,15 +35,18 @@ import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_DOUBLE
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.ZERO_INT
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
+import org.koin.androidx.compose.koinViewModel
 
-private const val UNITARY_VALUE_MAX_ALLOWED = 50000
+const val UNITARY_VALUE_MAX_ALLOWED = 50000.00
 private const val QUANTITY_MAX_ALLOWED = 100
 
 @Composable
 fun SaleInput(
     modifier: Modifier,
+    viewModel: UserDataViewModel,
     onAddButtonClicked: (String, Int, Double, Double, String) -> Unit,
-    showSnackbar: (String) -> Unit
+    showSnackbar: (String) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -56,16 +59,19 @@ fun SaleInput(
     ) {
         val clientName = remember { mutableStateOf(String()) }
         val productName = remember { mutableStateOf(String()) }
+
         val quantity = remember { mutableIntStateOf(ZERO_INT) }
         // It stores the quantity value show the text field
         val quantityText = remember { mutableStateOf(String()) }
+
         val unitaryValue = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
         // It stores the unitary value show the text field
         val unitaryValueText = remember { mutableStateOf(String()) }
+
         val totalQuantity = remember { mutableDoubleStateOf(ZERO_DOUBLE) }
         var onAddButtonClicked by remember { mutableStateOf(false) }
 
-        if(onAddButtonClicked) {
+        if (onAddButtonClicked) {
             HideKeyboard()
             onAddButtonClicked = false
         }
@@ -95,7 +101,7 @@ fun SaleInput(
                 value = clientName.value,
                 onValueChange = { clientName.value = it },
                 singleLine = true,
-                placeholder = { Text(text = stringResource(id = R.string.client_name)) },
+                label = { Text(text = stringResource(id = R.string.client_name)) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 4.dp)
                     .fillMaxWidth()
@@ -104,7 +110,7 @@ fun SaleInput(
                 value = productName.value,
                 onValueChange = { productName.value = it },
                 singleLine = true,
-                placeholder = { Text(text = stringResource(id = R.string.product_name)) },
+                label = { Text(text = stringResource(id = R.string.product_name)) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 4.dp)
                     .fillMaxWidth()
@@ -135,9 +141,9 @@ fun SaleInput(
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Decimal
                     ),
-                    placeholder = {
+                    label = {
                         Text(
                             text = stringResource(id = R.string.quantity_label)
                         )
@@ -149,7 +155,7 @@ fun SaleInput(
                     },
                     isError = quantity.intValue == ZERO_INT,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, top = 4.dp)
+                        .padding(start = 16.dp, end = 8.dp, top = 4.dp)
                         .fillMaxWidth()
                         .weight(1F)
                 )
@@ -167,6 +173,7 @@ fun SaleInput(
                                     unitaryValueText.value = newText
                                 } else {
                                     // If the new unitaryValue exceeds the limit, only updates the text to the previous value
+                                    unitaryValue.doubleValue = unitaryValue.doubleValue
                                     unitaryValueText.value = unitaryValue.doubleValue.toString()
                                 }
                             }
@@ -174,7 +181,7 @@ fun SaleInput(
                         setupTotalValue(totalQuantity, quantityText, unitaryValueText)
                     },
                     singleLine = true,
-                    placeholder = {
+                    label = {
                         Text(
                             text = stringResource(
                                 id = R.string.unitary_value_label
@@ -191,7 +198,7 @@ fun SaleInput(
                     },
                     isError = unitaryValue.doubleValue == ZERO_DOUBLE,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, top = 4.dp)
+                        .padding(end = 16.dp, top = 4.dp)
                         .fillMaxWidth()
                         .weight(1F)
                 )
@@ -219,10 +226,12 @@ fun SaleInput(
                 .padding(start = 16.dp, end = 8.dp, bottom = 16.dp)
                 .weight(1F),
                 onClick = {
-                    clearFields(
+                    viewModel.clearFields(
+                        clientName,
                         productName,
                         quantityText,
-                        unitaryValueText
+                        unitaryValueText,
+                        totalQuantity
                     )
                     onAddButtonClicked = true
                 }) {
@@ -249,10 +258,11 @@ fun SaleInput(
                             totalQuantity.doubleValue,
                             clientName.value
                         )
-                        clearFields(
-                            productName,
-                            quantityText,
-                            unitaryValueText,
+                        viewModel.clearFields(
+                            productName = productName,
+                            quantityText = quantityText,
+                            unitValueText = unitaryValueText,
+                            totalQuantity = totalQuantity
                         )
                     } else {
                         showSnackbar.invoke(emptyFieldsString)
@@ -303,18 +313,9 @@ private fun isFieldsNotEmpties(
             totalValue != ZERO_DOUBLE
 }
 
-private fun clearFields(
-    productName: MutableState<String>,
-    quantityText: MutableState<String>,
-    unitValueText: MutableState<String>
-) {
-    productName.value = String()
-    quantityText.value = String()
-    unitValueText.value = String()
-}
-
 @Preview
 @Composable
 fun SaleInputPreview() {
-    SaleInput(modifier = Modifier, { _, _, _, _, _ -> }, { _ -> })
+    val viewModel: UserDataViewModel = koinViewModel()
+    SaleInput(modifier = Modifier, viewModel, { _, _, _, _, _ -> }, { _ -> })
 }

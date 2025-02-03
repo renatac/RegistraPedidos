@@ -1,5 +1,6 @@
 package br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,12 +15,6 @@ import kotlin.coroutines.resume
 
 class UserDataViewModel(val repository: Repository) : ViewModel() {
 
-    // private val _allUsersDataStateFlow = MutableStateFlow<List<UserData>?>(emptyList())
-    // val allUsersDataStateFlow: StateFlow<List<UserData>?> = _allUsersDataStateFlow
-
-    //private val _userDataStateFlow = MutableStateFlow<UserData?>(null)
-    //val userDataStateFlow: StateFlow<UserData?> = _userDataStateFlow
-
     val allUsersDataOrderByRequestNumber: Flow<List<UserData?>> =
         repository.usersDataOrderByRequestNumber
 
@@ -28,16 +23,21 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
 
     var userDataId: Long = ZERO_LONG
 
-    // TODO ("Será usado depois")
     var saleDataId: Long = ZERO_LONG
 
-    fun calculateDiscount(
+    fun adjustDiscount(
         discountNumber: Double,
-        saleItemMutableStateList: SnapshotStateList<SaleItem>
+        saleItemMutableStateList: SnapshotStateList<SaleItem>,
+        isAddingDiscount: Boolean
     ) {
         val total = saleItemMutableStateList.sumOf { it.totalValue }
-        val discountList = saleItemMutableStateList.map {
-            it.copy(totalValue = it.totalValue - (discountNumber * (it.totalValue / total)))
+        val discountList = saleItemMutableStateList.map { item ->
+            val adjustment = if (isAddingDiscount) {
+                -discountNumber
+            } else {
+                discountNumber
+            }
+            item.copy(totalValue = item.totalValue + (adjustment * (item.totalValue / total)))
         }
         saleItemMutableStateList.clear()
         saleItemMutableStateList.addAll(discountList)
@@ -79,5 +79,21 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         viewModelScope.launch {
             repository.deleteSaleItemByItemNumber(itemNumber)
         }
+    }
+
+    fun clearFields(
+        clientName: MutableState<String>? = null,
+        productName: MutableState<String>,
+        quantityText: MutableState<String>,
+        unitValueText: MutableState<String>,
+        totalQuantity: MutableState<Double>
+    ) {
+        clientName?.let {
+            it.value = String()
+        }
+        productName.value = String()
+        quantityText.value = String()
+        unitValueText.value = String()
+        totalQuantity.value = 0.0
     }
 }

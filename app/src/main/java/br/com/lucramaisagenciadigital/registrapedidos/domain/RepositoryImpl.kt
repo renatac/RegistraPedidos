@@ -21,10 +21,6 @@ class RepositoryImpl(private val registerOrdersDao: RegisterOrdersDao) : Reposit
         }
     }
 
-    override suspend fun getUserDataByRequestNumber(requestNumber: Long): UserData? {
-        return registerOrdersDao.getUserDataByRequestNumber(requestNumber)
-    }
-
     override suspend fun deleteUserDataByRequestNumber(requestNumber: Long) {
         return registerOrdersDao.deleteUserDataByRequestNumber(requestNumber)
     }

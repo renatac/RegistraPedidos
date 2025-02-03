@@ -20,7 +20,14 @@ fun NavHost(
         startDestination = ScreenRoutes.FIRST_SCREEN_ROUTE.name
     ) {
         composable(route = ScreenRoutes.FIRST_SCREEN_ROUTE.name) {
-            MainScreen(Modifier, navController = navHostController)
+            MainScreen(
+                Modifier,
+                navigateToAddSaleScreen = {
+                    navHostController.navigate(ScreenRoutes.ADD_SALE_ROUTE.name)
+                },
+                navigateToSeeAllSalesScreen = {
+                    navHostController.navigate(ScreenRoutes.SEE_ALL_SALES_ROUTE.name)
+                })
         }
         composable(route = ScreenRoutes.ADD_SALE_ROUTE.name) {
             AddSaleScreen(

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,16 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import br.com.lucramaisagenciadigital.registrapedidos.R
-import br.com.lucramaisagenciadigital.registrapedidos.navigation.ScreenRoutes
 import br.com.lucramaisagenciadigital.registrapedidos.presentation.utils.components.RegisterOrdersTopAppBar
 
 @Composable
 fun MainScreen(
     modifier: Modifier,
-    navController: NavHostController
+    navigateToAddSaleScreen: () -> Unit,
+    navigateToSeeAllSalesScreen: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -44,7 +41,8 @@ fun MainScreen(
         content = { contentPadding ->
             MainScreenContent(
                 modifier.padding(contentPadding),
-                navController
+                navigateToAddSaleScreen,
+                navigateToSeeAllSalesScreen
             )
         }
     )
@@ -53,7 +51,8 @@ fun MainScreen(
 @Composable
 fun MainScreenContent(
     modifier: Modifier,
-    navController: NavHostController
+    navigateToAddSaleScreen: () -> Unit,
+    navigateToSeeAllSalesScreen: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -93,7 +92,7 @@ fun MainScreenContent(
                 .fillMaxWidth()
                 .padding(top = 48.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
             onClick = {
-                navController.navigate(ScreenRoutes.ADD_SALE_ROUTE.name)
+                navigateToAddSaleScreen.invoke()
             }
         ) {
             Text(
@@ -108,7 +107,7 @@ fun MainScreenContent(
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
             onClick = {
-                navController.navigate(ScreenRoutes.SEE_ALL_SALES_ROUTE.name)
+                navigateToSeeAllSalesScreen.invoke()
             }) {
             Text(
                 text = stringResource(id = R.string.see_sales_made),
@@ -122,6 +121,5 @@ fun MainScreenContent(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    val navController = rememberNavController()
-    MainScreen(modifier = Modifier, navController)
+    MainScreen(modifier = Modifier, {}, {})
 }

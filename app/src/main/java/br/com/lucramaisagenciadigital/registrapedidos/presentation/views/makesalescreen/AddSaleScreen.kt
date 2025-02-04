@@ -57,7 +57,7 @@ fun AddSaleScreenContent(
         topBar = {
             RegisterOrdersTopAppBar(
                 Modifier,
-                title = stringResource(id = R.string.doing_sale),
+                title = stringResource(id = R.string.registering_sales),
                 onBackButtonClicked = { navigateToMainScreen.invoke() }
             )
         },

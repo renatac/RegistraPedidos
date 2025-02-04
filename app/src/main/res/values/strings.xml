@@ -2,7 +2,7 @@
     <string name="app_name">RegistraPedidos</string>
     <string name="registry_requests">Registra Pedidos</string>
     <string name="slogan_phase_subtitle">As vendas que você realizou agora estão na palma da sua mão.</string>
-    <string name="doing_sale">Fazer uma venda</string>
+    <string name="registering_sales">Registrar vendas</string>
     <string name="all_sales">Todas as vendas</string>
     <string name="see_sales_made">Ver vendas realizadas</string>
     <string name="fill_sale_register">Preencha os dados da venda</string>

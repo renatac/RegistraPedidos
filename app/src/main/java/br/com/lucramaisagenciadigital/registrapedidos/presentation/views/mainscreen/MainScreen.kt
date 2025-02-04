@@ -96,7 +96,7 @@ fun MainScreenContent(
             }
         ) {
             Text(
-                text = stringResource(id = R.string.doing_sale),
+                text = stringResource(id = R.string.registering_sales),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )

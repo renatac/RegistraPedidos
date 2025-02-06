@@ -48,7 +48,7 @@ fun AddSaleScreenContent(
     navigateToMainScreen: () -> Unit
 ) {
     val saleItemMutableStateList = remember { mutableStateListOf<SaleItem>() }
-    var clientName = remember { mutableStateOf("") }
+    val clientName = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -75,13 +75,13 @@ fun AddSaleScreenContent(
                                     viewModel.insertUserData(UserData(name = clientName.value))
 
                                 //Inserting SaleItems for the UserData only after the UserData is inserted
-                                val saleItemDeferreds: List<Deferred<Long>> =
+                                val saleItemsDeferred: List<Deferred<Long>> =
                                     saleItemMutableStateList.map { saleItem: SaleItem ->
                                         val updatedSaleItem = saleItem.copy(userDataId = userDataId)
                                         async { viewModel.insertSaleItem(updatedSaleItem) }
                                     }
 
-                                saleItemDeferreds.awaitAll() // Wait for all SaleItem insertions to complete
+                                saleItemsDeferred.awaitAll() // Wait for all SaleItem insertions to complete
                                 snackbarHostState.showSnackbar(
                                     message = context.getString(R.string.sales_added),
                                     duration = SnackbarDuration.Short
@@ -136,6 +136,7 @@ fun AddSaleScreenContent(
                 val discountBiggerWrongMessage = stringResource(id = R.string.discount_bigger_than_total_value)
                 ViewSales(
                     saleItemsList = saleItemMutableStateList,
+                    viewModel = viewModel,
                     clientNameMutableState = clientName,
                     onDeleteButtonClicked = { saleItem: SaleItem ->
                         saleItemMutableStateList.remove(saleItem)

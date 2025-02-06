@@ -96,4 +96,13 @@ class UserDataViewModel(val repository: Repository) : ViewModel() {
         unitValueText.value = String()
         totalQuantity.value = 0.0
     }
+
+    fun getFirstName(fullName: String): String {
+        val names = fullName.trim().split(" ")
+        return if (names.isNotEmpty()) {
+            names[0]
+        } else {
+            String()
+        }
+    }
 }

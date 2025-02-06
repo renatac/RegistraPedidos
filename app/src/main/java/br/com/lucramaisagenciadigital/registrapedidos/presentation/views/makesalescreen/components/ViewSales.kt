@@ -37,11 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.lucramaisagenciadigital.registrapedidos.R
 import br.com.lucramaisagenciadigital.registrapedidos.database.entities.SaleItem
+import br.com.lucramaisagenciadigital.registrapedidos.presentation.viewmodel.UserDataViewModel
 import br.com.lucramaisagenciadigital.registrapedidos.ui.theme.DarkBlue
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ViewSales(
     modifier: Modifier = Modifier,
+    viewModel: UserDataViewModel,
     clientNameMutableState: MutableState<String>? = null,
     saleItemsList: List<SaleItem>? = emptyList(),
     onDeleteButtonClicked: (SaleItem) -> Unit,
@@ -65,7 +68,7 @@ fun ViewSales(
                 } else {
                     stringResource(
                         id = R.string.client_sales_added,
-                        getFirstName(clientNameMutableState?.value.orEmpty())
+                        viewModel.getFirstName(clientNameMutableState?.value.orEmpty())
                     )
                 },
                 fontSize = 20.sp,
@@ -159,18 +162,10 @@ fun ViewSales(
     }
 }
 
-fun getFirstName(fullName: String): String {
-    val names = fullName.trim().split(" ")
-    return if (names.isNotEmpty()) {
-        names[0]
-    } else {
-        ""
-    }
-}
-
 @Preview
 @Composable
 fun ViewSalesPreview() {
+    val viewModel: UserDataViewModel = koinViewModel()
     val saleItems = listOf(
         SaleItem(
             1,
@@ -190,6 +185,7 @@ fun ViewSalesPreview() {
         )
     )
     ViewSales(
+        viewModel = viewModel,
         saleItemsList = saleItems,
         onDeleteButtonClicked = { _ -> },
         onCalculateDiscount = { _, _, _ -> }
